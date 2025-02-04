@@ -1,0 +1,19 @@
+spring:
+  application:
+    name:bpm.elf.backend
+#  devtools:
+#    restart:
+#      enabled: true
+#      additional-paths: src/main/java
+#    livereload:
+#      enabled: true
+
+server:
+  port: 8080
+  netty:
+    connection-timeout: 30s
+    max-http-header-size: 16KB
+
+file:
+  base:
+    directory: classpath:/templates/

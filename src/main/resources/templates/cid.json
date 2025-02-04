@@ -1,0 +1,136 @@
+{
+  "name": "CID",
+  "tickets": [
+    {
+      "title": "CID",
+      "inputs": [
+        {
+          "type": "text",
+          "label": "系統代號",
+          "key": "SYSTEM_CODE"
+        },
+        {
+          "type": "text",
+          "label": "部門代號",
+          "key": "DEPT_CODE"
+        },
+        {
+          "type": "text",
+          "label": "員工編號",
+          "key": "EMPLOYEE_CODE"
+        },
+        {
+          "type": "text",
+          "label": "Read/Write 權限",
+          "key": "READ_WRITE_EMPLOYEE"
+        },
+        {
+          "type": "text",
+          "label": "Read 權限",
+          "key": "READ_EMPLOYEE"
+        },
+        {
+          "type": "text",
+          "label": "Bitbucket Project Name",
+          "key": "BITBUCKET_PROJECT_NAME"
+        },
+        {
+          "type": "text",
+          "label": "Bitbucket Repo Name",
+          "key": "BITBUCKET_REPO_NAME"
+        },
+        {
+          "type": "text",
+          "label": "Library Name",
+          "key": "LIBRARY_NAME"
+        },
+        {
+          "type": "text",
+          "label": "Module Name",
+          "key": "MODULE_NAME"
+        },
+        {
+          "type": "text",
+          "label": "CI Server Name",
+          "key": "CI_SERVER_NAME"
+        },
+        {
+          "type": "text",
+          "label": "Branch Name",
+          "key": "BRANCH"
+        },
+        {
+          "type": "text",
+          "label": "JFrog Repo Name",
+          "key": "JFROG_REPO_NAME"
+        },
+        {
+          "type": "text",
+          "label": "configuration",
+          "key": "CONF_NAME"
+        },
+        {
+          "type": "text",
+          "label": "sub_folder",
+          "key": "FOLDER_NAME"
+        },
+        {
+          "type": "text",
+          "label": "SLN Name",
+          "key": "SLN_NAME"
+        },
+        {
+          "type": "text",
+          "label": "JDK Version",
+          "key": "JDK_VERSION"
+        },
+        {
+          "type": "text",
+          "label": "Maven Version",
+          "key": "MAVEN_VERSION"
+        },
+        {
+          "type": "text",
+          "label": "is_use_release_plugin",
+          "key": "IS_USE_MAVEN_RELEASE_PLUGIN"
+        },
+        {
+          "type": "text",
+          "label": "Program Type",
+          "key": "PROGRAM_TYPE"
+        },
+        {
+          "type": "text",
+          "label": "Lib Name",
+          "key": "LIB_NAME"
+        },
+        {
+          "type": "text",
+          "label": "DOWNLOAD URL",
+          "key": "DOWNLOAD_URL"
+        },
+        {
+          "type": "text",
+          "label": "Path Under Tager",
+          "key": "PATH_UNDER_TAGER"
+        },
+        {
+          "type": "text",
+          "label": "Host Name",
+          "key": "host_name"
+        },
+        {
+          "type": "text",
+          "label": "System Module",
+          "key": "system_module"
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "cid_description",
+          "template": "[需求說明]\n系統 ${SYSTEM_CODE} 整合 CID 流程，進行下列申請 :\n1. Bitbucket 申請建立 Golden Image / Ansible playbook repo\n1-1. Golden image\nProject: https://bitbucket.linebank.com.tw/projects/LBTWGOL\n\n請建立新 repo 並賦予相關人員權限 :\nRepo Name: ${DEPT_CODE}.${SYSTEM_CODE}.assembly\n\n管理者: ${EMPLOYEE_CODE}\nRead/Write 權限: ${EMPLOYEE_CODE}\nRead 權限: ${EMPLOYEE_CODE}\n\n1-2. Ansible playbook\nProject: https://bitbucket.linebank.com.tw/projects/LBTWANS\n\n請建立新 repo 並賦予相關人員權限 :\nRepo Name: ${DEPT_CODE}.${SYSTEM_CODE}\n\n管理者: ${EMPLOYEE_CODE}\nRead/Write 權限: ${EMPLOYEE_CODE}\nRead 權限: ${EMPLOYEE_CODE}\n\n(以上 Read/Write 權限 or Read 權限 視實際需求申請 )\n\n1-3. Libs\nRepo : Libs url https://bitbucket.linebank.com.tw/projects/${BITBUCKET_PROJECT_NAME}/${BITBUCKET_REPO_NAME}\n請賦予 cid.jenkins.worker Read/Write 權限"
+        }
+      ]
+    }
+  ]
+}

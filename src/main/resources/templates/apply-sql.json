@@ -1,0 +1,45 @@
+{
+  "name": "SQL作業",
+  "tickets": [
+    {
+      "title": "DB撈取/修改資訊",
+      "inputs": [
+        {
+          "type": "radio",
+          "label": "環境",
+          "key": "env",
+          "options": [
+            {
+              "text": "DEV"
+            },
+            {
+              "text": "STG"
+            },
+            {
+              "text": "UAT"
+            },
+            {
+              "text": "PRD"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "label": "機器",
+          "key": "device"
+        },
+        {
+          "type": "textarea",
+          "label": "描述",
+          "key": "apply_sql_description"
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "apply_sql_operation_description",
+          "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${apply_sql_description}\n\n[執行單位]\n資訊暨資安作業管理部"
+        }
+      ]
+    }
+  ]
+}

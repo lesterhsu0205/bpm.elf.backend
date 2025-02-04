@@ -1,0 +1,40 @@
+{
+  "hidden": true,
+  "name": "Release單簽核",
+  "tickets": [
+    {
+      "title": "jabber",
+      "inputs": [
+        {
+          "type": "checkbox",
+          "label": "主管",
+          "key": "manager",
+          "options": [
+            {
+              "text": "Kevin"
+            },
+            {
+              "text": "Charles"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "label": "同意上線單號連結",
+          "key": "approve_release"
+        },
+        {
+          "type": "textarea",
+          "label": "結案單號連結",
+          "key": "close_release"
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "apply_interface_approve_description",
+          "template": "Hi ${manager} 下列 release 單需要協助簽核, 謝謝\n\n[同意上線]\n${approve_release}\n\n[結案]\n${close_release}"
+        }
+      ]
+    }
+  ]
+}

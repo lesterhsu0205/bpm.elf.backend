@@ -1,0 +1,193 @@
+{
+  "name": "新人報到",
+  "tickets": [
+    {
+      "title": "基本資料",
+      "inputs": [
+        {
+          "type": "select",
+          "label": "處別",
+          "key": "division",
+          "options": [
+            {
+              "text": "核心系統處"
+            },
+            {
+              "text": "業務系統處"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "label": "部門",
+          "key": "department",
+          "options": [
+            {
+              "text": "系統整合應用部"
+            },
+            {
+              "text": "營運支援系統部"
+            },
+            {
+              "text": "台幣存匯系統部"
+            },
+            {
+              "text": "台幣共用系統部"
+            },
+            {
+              "text": "支付系統部"
+            },
+            {
+              "text": "風險系統部"
+            },
+            {
+              "text": "台幣放款系統部"
+            },
+            {
+              "text": "保險系統部"
+            },
+            {
+              "text": "外匯暨信託系統部"
+            },
+            {
+              "text": "QA暨資訊營管部"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "員工編號",
+          "key": "staffId"
+        },
+        {
+          "type": "text",
+          "label": "英文名",
+          "key": "engName"
+        },
+        {
+          "type": "text",
+          "label": "中文名",
+          "key": "chiName"
+        }
+      ]
+    },
+    {
+      "title": "設備",
+      "path": "資訊基礎服務處需求 > Helpdesk > 資訊設備申請",
+      "inputs": [
+        {
+          "type": "select",
+          "label": "申請項目",
+          "key": "apply_device",
+          "options": [
+            {
+              "text": "螢幕"
+            },
+            {
+              "text": "筆記型電腦"
+            }
+          ]
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "apply_device_description",
+          "template": "[需求說明]\n${division} ${department} 新進同仁 ${staffId} ${engName} ${chiName} 新人到職申請 ${apply_device}\n\n[執行單位]\n問管暨IDC作業管理部"
+        }
+      ]
+    },
+    {
+      "title": "安裝軟體",
+      "inputs": [
+        {
+          "type": "select",
+          "label": "申請安裝設備",
+          "key": "apply_install_device",
+          "options": [
+            {
+              "text": "筆記型電腦"
+            },
+            {
+              "text": "桌上型電腦"
+            },
+            {
+              "text": "監控室電腦"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "label": "申請原因",
+          "key": "apply_install_reason"
+        },
+        {
+          "type": "textarea",
+          "label": "安裝軟體清單",
+          "key": "softwareList"
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "install_software_description",
+          "template": "申請部門: ${division}/${department}\n申請安裝人員: ${staffId} ${engName} ${chiName}\n申請安裝設備: ${apply_install_device}\n申請原因:\n${apply_install_reason}\n安裝軟體資訊如下:\n*詳細資訊請參考附件\n${softwareList}\n\n[執行單位]\n問管暨IDC作業管理部"
+        }
+      ]
+    },
+    {
+      "title": "Bitbucket",
+      "inputs": [
+        {
+          "type": "checkbox",
+          "label": "環境",
+          "key": "env",
+          "options": [
+            {
+              "text": "DEV"
+            },
+            {
+              "text": "STG"
+            },
+            {
+              "text": "UAT"
+            },
+            {
+              "text": "PRD"
+            }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "label": "需求類型",
+          "key": "require_type",
+          "options": [
+            {
+              "text": "新增"
+            },
+            {
+              "text": "修改"
+            },
+            {
+              "text": "刪除"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "label": "申請原因",
+          "key": "bitbucket_apply_reason"
+        },
+        {
+          "type": "textarea",
+          "label": "申請的系統權限或角色",
+          "key": "bitbucket_authority_role"
+        },
+        {
+          "type": "description",
+          "label": "需求說明",
+          "key": "bitbucket_description",
+          "template": ""
+        }
+      ]
+    }
+  ]
+}

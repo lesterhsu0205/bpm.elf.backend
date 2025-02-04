@@ -17,7 +17,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/bpm-elf/api")
+@CrossOrigin(origins = "*")
 public class TemplateController {
 
     // 從 application.yml 中讀取設定的 BASE_DIRECTORY
@@ -97,8 +98,16 @@ public class TemplateController {
             // 確保目錄存在，若不存在則建立
             Files.createDirectories(filePath.getParent());
 
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode jsonNode = objectMapper.readTree(jsonContent);
+
+            String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
+
+            String lfContent = prettyJson.replace("\r\n", "\n");
+
             // 寫入 JSON 內容（覆蓋或新增）
-            Files.writeString(filePath, jsonContent);
+            Files.writeString(filePath, lfContent);
 
             response.put("message", "File written successfully: " + filename);
             return ResponseEntity.ok(response);

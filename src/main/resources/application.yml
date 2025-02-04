@@ -1,6 +1,6 @@
 spring:
   application:
-    name:bpm.elf.backend
+    name:com.line.bank.bxi.bpm.elf.backend
 #  devtools:
 #    restart:
 #      enabled: true

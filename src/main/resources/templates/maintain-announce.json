@@ -1,0 +1,36 @@
+{
+  "name": "維護公告",
+  "path": "常用模板 > Mail > 維護公告",
+  "inputs": [
+    {
+      "type": "checkbox",
+      "label": "環境",
+      "key": "env",
+      "options": [
+        {
+          "text": "DEV"
+        },
+        {
+          "text": "STG"
+        },
+        {
+          "text": "UAT"
+        },
+        {
+          "text": "PRD"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "label": "是否影響服務等說明",
+      "key": "impact_description"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "announce_mail_description",
+      "template": "Hi All,\n    \n[主機清單]\n${device}\n\n[事項]\n執行時間: ${start_time} ~ ${end_time}\n作業說明: [${env}] ${op_description}\n是否影響服務等說明: ${impact_description}\n\n特此告知。\n"
+    }
+  ]
+}

@@ -16,4 +16,4 @@ server:
 
 file:
   base:
-    directory: classpath:/templates/
+    directory: ${user.dir}/src/main/resources/templates/

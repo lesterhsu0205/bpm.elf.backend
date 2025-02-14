@@ -1,0 +1,60 @@
+{
+  "name": "DB申請",
+  "tickets": [
+    {
+      "name": "基本資料",
+      "inputs": [
+        {
+          "$enum": "Dropdown.ENV"
+        },
+        {
+          "type": "textarea",
+          "label": "機器",
+          "key": "device"
+        },
+        {
+          "type": "textarea",
+          "label": "原由",
+          "key": "reason"
+        },
+        {
+          "type": "radio",
+          "label": "DB",
+          "key": "db_tool",
+          "options": [
+            {
+              "text": "MySQL"
+            },
+            {
+              "text": "Microsoft SQL Server"
+            },
+            {
+              "text": "PostgreSQL"
+            },
+            {
+              "text": "Oracle SQL Developer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+     "$ref": "vm.json"
+    },
+    {
+      "$ref": "imperva.json"
+    },
+    {
+      "$ref": "install-dpm.json"
+    },
+    {
+      "$ref": "db.json"
+    },
+    {
+      "$ref": "vip-domain.json"
+    },
+    {
+      "$ref": "firewall.json"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "DPM 安裝",
+  "path": "資安處需求 > Security > File Based Log、DB 加密新增/移除申請",
+  "inputs": [
+    {
+      "type": "text",
+      "label": "協作 DBA",
+      "key": "dba_partner"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "apply_dpm_install_description",
+      "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${reason}\n\n新主機上需要安裝 DPM 資料庫加密軟體，\n請協助安裝DPM，安裝過程再請與 DBA-${dba_partner} 一同協作，謝謝。\n\n[執行單位]\nIS_資安技術部"
+    }
+  ]
+}

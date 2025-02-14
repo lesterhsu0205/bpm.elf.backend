@@ -1,0 +1,84 @@
+{
+  "name": "新人報到",
+  "tickets": [
+    {
+      "name": "基本資料",
+      "inputs": [
+        {
+          "type": "select",
+          "label": "處別",
+          "key": "division",
+          "options": [
+            {
+              "text": "核心系統處"
+            },
+            {
+              "text": "業務系統處"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "label": "部門",
+          "key": "department",
+          "options": [
+            {
+              "text": "系統整合應用部"
+            },
+            {
+              "text": "營運支援系統部"
+            },
+            {
+              "text": "台幣存匯系統部"
+            },
+            {
+              "text": "台幣共用系統部"
+            },
+            {
+              "text": "支付系統部"
+            },
+            {
+              "text": "風險系統部"
+            },
+            {
+              "text": "台幣放款系統部"
+            },
+            {
+              "text": "保險系統部"
+            },
+            {
+              "text": "外匯暨信託系統部"
+            },
+            {
+              "text": "QA暨資訊營管部"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "員工編號",
+          "key": "staffId"
+        },
+        {
+          "type": "text",
+          "label": "英文名",
+          "key": "engName"
+        },
+        {
+          "type": "text",
+          "label": "中文名",
+          "key": "chiName"
+        }
+      ]
+    },
+    {
+      "$ref": "device-nb-monitor.json"
+    },
+    {
+      "$ref": "install-software.json"
+    },
+    {
+      "$ref": "bitbucket.json"
+    }
+  ]
+}

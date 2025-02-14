@@ -1,0 +1,22 @@
+{
+  "name": "VIP Domain",
+  "path": "資訊基礎服務處需求 > 平台管理需求申請 > 其他需求",
+  "inputs": [
+    {
+      "type": "text",
+      "label": "VIP Domain",
+      "key": "vip_domain"
+    },
+    {
+      "type": "textarea",
+      "label": "描述",
+      "key": "vip_domain_discription"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "apply_vip_domain_description",
+      "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${vip_domain_discription}\n請\n1.網路部協助配發 IP \n2.平台部協助設定 DNS - ${vip_domain}\n\n[執行單位]\nIF-網路架構管理部\nIF-平台架構管理部"
+    }
+  ]
+}

@@ -3,23 +3,7 @@
   "path": "資訊基礎服務處需求 > 資管部相關作業 > DB撈取/修改作業",
   "inputs": [
     {
-      "type": "radio",
-      "label": "環境",
-      "key": "env",
-      "options": [
-        {
-          "text": "DEV"
-        },
-        {
-          "text": "STG"
-        },
-        {
-          "text": "UAT"
-        },
-        {
-          "text": "PRD"
-        }
-      ]
+      "$enum": "Radio.ENV"
     },
     {
       "type": "textarea",

@@ -8,7 +8,7 @@ public interface ComponentEnum {
 
     Map<String, Object> toJson(); // 轉成 JSON
 
-    // ✅ 讓 `DropdownEnum` 也有 `name()` 方法
+    // 讓 `DropdownEnum` 也有 `name()` 方法
     default String name() {
         return ((Enum<?>) this).name();
     }

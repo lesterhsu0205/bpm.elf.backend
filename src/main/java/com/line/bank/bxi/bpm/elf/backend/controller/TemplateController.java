@@ -79,7 +79,7 @@ public class TemplateController {
 
                             JsonNode jsonNode = readJson(file);
 
-                            Set<String> processedRefs = new HashSet<>();  // ✅ 追蹤當前請求內的 JSON 檔案
+                            Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
                             int initialDepth = 0; // 記錄當前遞迴深度
 
                             jsonNode = mergeJsonReferences(fileName, jsonNode, processedRefs, initialDepth);
@@ -263,7 +263,7 @@ public class TemplateController {
                         }
                         String enumName = parts[1]; // e.g. "DEPARTMENT"
 
-                        // 🚀 透過 EnumRegistry 快速查找
+                        // 透過 EnumRegistry 快速查找
                         ComponentEnum componentEnum = EnumRegistry.getByEnumName(enumName);
                         if (componentEnum == null) {
                             return root; // 找不到時不處理，直接回傳原始 JSON
@@ -289,7 +289,7 @@ public class TemplateController {
         return root;
     }
 
-    // 遞歸合併 JSON 內的 "$ref"
+    // 遞歸合併 JSON 內的 "$include"
     private JsonNode mergeJsonReferences(String fileName, JsonNode node, Set<String> processedRefs, int depth) {
 
         if (node.isObject()) {
@@ -300,15 +300,15 @@ public class TemplateController {
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();
 
-                if ("$ref".equalsIgnoreCase(fieldName)) {
-                    String refFileName = objectNode.get("$ref").asText();
+                if ("$include".equalsIgnoreCase(fieldName)) {
+                    String refFileName = objectNode.get("$include").asText();
 
                     // 避免自己 include 自己
                     if (refFileName.equalsIgnoreCase(fileName)) {
                         return objectNode;
                     }
 
-                    // 🚨 避免無窮遞迴：當前這次遞迴內已經解析過該 JSON，則直接返回，不展開
+                    // 避免無窮遞迴：當前這次遞迴內已經解析過該 JSON，則直接返回，不展開
                     if (processedRefs.contains(refFileName)) {
                         return objectNode;
                     }

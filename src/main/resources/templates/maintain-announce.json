@@ -3,23 +3,7 @@
   "path": "常用模板 > Mail > 維護公告",
   "inputs": [
     {
-      "type": "checkbox",
-      "label": "環境",
-      "key": "env",
-      "options": [
-        {
-          "text": "DEV"
-        },
-        {
-          "text": "STG"
-        },
-        {
-          "text": "UAT"
-        },
-        {
-          "text": "PRD"
-        }
-      ]
+      "$enum": "Radio.ENV"
     },
     {
       "type": "textarea",

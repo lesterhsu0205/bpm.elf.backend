@@ -27,10 +27,10 @@
       ]
     },
     {
-      "$ref": "maintain-announce.json"
+      "$include": "maintain-announce.json"
     },
     {
-      "$ref": "exclude-letter.json"
+      "$include": "exclude-letter.json"
     }
   ]
 }

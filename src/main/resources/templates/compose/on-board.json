@@ -1,0 +1,34 @@
+{
+  "name": "新人報到",
+  "tickets": [
+    {
+      "name": "基本資料",
+      "inputs": [
+        {
+          "$enum": "Dropdown.DIVISION"
+        },
+        {
+          "$enum": "Dropdown.DEPARTMENT"
+        },
+        {
+          "$enum": "Text.STAFF_ID"
+        },
+        {
+          "$enum": "Text.ENG_NAME"
+        },
+        {
+          "$enum": "Text.CHI_NAME"
+        }
+      ]
+    },
+    {
+      "$include": "device-nb-monitor.json"
+    },
+    {
+      "$include": "install-software.json"
+    },
+    {
+      "$include": "bitbucket.json"
+    }
+  ]
+}

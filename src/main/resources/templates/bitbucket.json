@@ -3,23 +3,7 @@
   "path": "帳號管理 > 自動化後勤系統(Bitbucket/Jenkins) > Bitbucket",
   "inputs": [
     {
-      "type": "checkbox",
-      "label": "環境",
-      "key": "env",
-      "options": [
-        {
-          "text": "DEV"
-        },
-        {
-          "text": "STG"
-        },
-        {
-          "text": "UAT"
-        },
-        {
-          "text": "PRD"
-        }
-      ]
+      "$enum": "Radio.ENV"
     },
     {
       "type": "checkbox",

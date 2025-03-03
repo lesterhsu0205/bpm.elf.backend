@@ -1,12 +1,10 @@
 {
-  "name": "防火牆",
-  "path": "資訊基礎服務處需求 > 網路管理需求申請 > 防火牆規則異動/申請",
-  "inputs": [
-    {
-      "type": "description",
-      "label": "需求說明",
-      "key": "apply_db_description",
-      "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${reason}\n故需開通防火牆，請依附件執行\n\n[執行單位]\nIF-網路架構管理部"
-    }
-  ]
+  "name" : "防火牆",
+  "path" : "資訊基礎服務處需求 > 網路管理需求申請 > 防火牆規則異動/申請",
+  "inputs" : [ {
+    "type" : "description",
+    "label" : "需求說明",
+    "key" : "apply_db_description",
+    "template" : "[環境]\n${env}\n${device}\n\n[需求說明]\n${reason}\n故需開通防火牆，請依附件執行\n\n[執行單位]\nIF-網路架構管理部"
+  } ]
 }

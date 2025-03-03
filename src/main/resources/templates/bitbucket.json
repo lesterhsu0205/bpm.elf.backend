@@ -1,41 +1,31 @@
 {
-  "name": "Bitbucket",
-  "path": "帳號管理 > 自動化後勤系統(Bitbucket/Jenkins) > Bitbucket",
-  "inputs": [
-    {
-      "$enum": "Radio.ENV"
-    },
-    {
-      "type": "checkbox",
-      "label": "需求類型",
-      "key": "require_type",
-      "options": [
-        {
-          "text": "新增"
-        },
-        {
-          "text": "修改"
-        },
-        {
-          "text": "刪除"
-        }
-      ]
-    },
-    {
-      "type": "textarea",
-      "label": "申請原因",
-      "key": "bitbucket_apply_reason"
-    },
-    {
-      "type": "textarea",
-      "label": "申請的系統權限或角色",
-      "key": "bitbucket_authority_role"
-    },
-    {
-      "type": "description",
-      "label": "需求說明",
-      "key": "bitbucket_description",
-      "template": ""
-    }
-  ]
+  "name" : "Bitbucket",
+  "path" : "帳號管理 > 自動化後勤系統(Bitbucket/Jenkins) > Bitbucket",
+  "inputs" : [ {
+    "$enum" : "Radio.ENV"
+  }, {
+    "type" : "checkbox",
+    "label" : "需求類型",
+    "key" : "require_type",
+    "options" : [ {
+      "text" : "新增"
+    }, {
+      "text" : "修改"
+    }, {
+      "text" : "刪除"
+    } ]
+  }, {
+    "type" : "textarea",
+    "label" : "申請原因",
+    "key" : "bitbucket_apply_reason"
+  }, {
+    "type" : "textarea",
+    "label" : "申請的系統權限或角色",
+    "key" : "bitbucket_authority_role"
+  }, {
+    "type" : "description",
+    "label" : "需求說明",
+    "key" : "bitbucket_description",
+    "template" : ""
+  } ]
 }

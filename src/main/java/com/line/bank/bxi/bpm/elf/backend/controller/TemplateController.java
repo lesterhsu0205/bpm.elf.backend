@@ -49,12 +49,16 @@ public class TemplateController {
 
                             Map<String, Object> jsonFile = new HashMap<>();
                             jsonFile.put("file", fileName);
+                            jsonFile.put("isCompose", "compose".equals(file.getParent().getFileName().toString()));
                             jsonFile.put("content", jsonNode);  // 儲存為 JSON 結構
                             resultList.add(jsonFile);
                         } catch (IOException e) {
                             throw new RuntimeException("Error reading file: " + file.getFileName(), e);
                         }
                     });
+
+            // 排序：isCompose = true 的排在最後
+            resultList.sort(Comparator.comparing(map -> Boolean.TRUE.equals(map.get("isCompose"))));
 
             return ResponseEntity.ok(resultList);
 
@@ -87,12 +91,16 @@ public class TemplateController {
 
                             Map<String, Object> jsonFile = new HashMap<>();
                             jsonFile.put("file", fileName);
+                            jsonFile.put("isCompose", "compose".equals(file.getParent().getFileName().toString()));
                             jsonFile.put("content", jsonNode);  // 儲存為 JSON 結構
                             resultList.add(jsonFile);
                         } catch (IOException e) {
                             throw new RuntimeException("Error reading file: " + file.getFileName(), e);
                         }
                     });
+
+            // 排序：isCompose = true 的排在最後
+            resultList.sort(Comparator.comparing(map -> Boolean.TRUE.equals(map.get("isCompose"))));
 
             return ResponseEntity.ok(resultList);
 
@@ -101,36 +109,46 @@ public class TemplateController {
         }
     }
 
-    @GetMapping(value = "/read-setting/{filename}", produces = "application/json")
-    public ResponseEntity<String> getTemplate(@PathVariable("filename") String filename) {
+    @GetMapping(value = "/read-setting/compose/{filename}", produces = "application/json")
+    public ResponseEntity<String> getComposeTemplate(@PathVariable("filename") String filename) {
         try {
-            validFileExtention(filename);
-
-            String jsonContent;
 
             // 檢查是否使用 classpath (開發環境)
             if (baseDirectory.startsWith("classpath:")) {
+                validFileExtention(filename);
                 String classpathPath = baseDirectory.replace("classpath:", "");
                 Resource resource = new ClassPathResource(classpathPath + filename);
                 if (!resource.exists()) {
                     return ResponseEntity.status(404).body("File not found: " + filename);
                 }
-                jsonContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                String jsonContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                return ResponseEntity.ok().body(jsonContent);
             } else {
-                // 正式環境：直接從文件系統讀取
-                String filePath = baseDirectory + filename;
-                JsonNode jsonNode = readJson(Paths.get(filePath));
-
-                Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
-                int initialDepth = 0; // 記錄當前遞迴深度
-
-                jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
-                jsonNode = processEnums(jsonNode);
-                jsonContent = objectMapper.writeValueAsString(jsonNode);
-//                jsonContent = Files.readString(Paths.get(filePath));
+                return getTemplate(filename, true);
             }
 
-            return ResponseEntity.ok().body(jsonContent);
+        } catch (IOException e) {
+            return ResponseEntity.status(404).body("Error reading file: " + filename);
+        }
+    }
+
+    @GetMapping(value = "/read-setting/{filename}", produces = "application/json")
+    public ResponseEntity<String> getTemplate(@PathVariable("filename") String filename) {
+        try {
+
+            // 檢查是否使用 classpath (開發環境)
+            if (baseDirectory.startsWith("classpath:")) {
+                validFileExtention(filename);
+                String classpathPath = baseDirectory.replace("classpath:", "");
+                Resource resource = new ClassPathResource(classpathPath + filename);
+                if (!resource.exists()) {
+                    return ResponseEntity.status(404).body("File not found: " + filename);
+                }
+                String jsonContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+                return ResponseEntity.ok().body(jsonContent);
+            } else {
+                return getTemplate(filename, false);
+            }
 
         } catch (IOException e) {
             return ResponseEntity.status(404).body("Error reading file: " + filename);
@@ -346,5 +364,30 @@ public class TemplateController {
 
         return node;
 
+    }
+
+    private ResponseEntity<String> getTemplate(String filename, boolean isCompose) {
+        try {
+            validFileExtention(filename);
+
+            String jsonContent;
+
+            // 正式環境：直接從文件系統讀取
+            String filePath = isCompose ? baseDirectory + "compose/" + filename : baseDirectory + filename;
+            JsonNode jsonNode = readJson(Paths.get(filePath));
+
+            Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
+            int initialDepth = 0; // 記錄當前遞迴深度
+
+            jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
+            jsonNode = processEnums(jsonNode);
+            jsonContent = objectMapper.writeValueAsString(jsonNode);
+
+
+            return ResponseEntity.ok().body(jsonContent);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(404).body("Error reading file: " + filename);
+        }
     }
 }

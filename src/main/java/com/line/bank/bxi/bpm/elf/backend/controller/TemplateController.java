@@ -7,14 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.line.bank.bxi.bpm.elf.backend.constant.ComponentEnum;
 import com.line.bank.bxi.bpm.elf.backend.constant.EnumRegistry;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -111,48 +107,12 @@ public class TemplateController {
 
     @GetMapping(value = "/read-setting/compose/{filename}", produces = "application/json")
     public ResponseEntity<String> getComposeTemplate(@PathVariable("filename") String filename) {
-        try {
-
-            // 檢查是否使用 classpath (開發環境)
-            if (baseDirectory.startsWith("classpath:")) {
-                validFileExtention(filename);
-                String classpathPath = baseDirectory.replace("classpath:", "");
-                Resource resource = new ClassPathResource(classpathPath + filename);
-                if (!resource.exists()) {
-                    return ResponseEntity.status(404).body("File not found: " + filename);
-                }
-                String jsonContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-                return ResponseEntity.ok().body(jsonContent);
-            } else {
-                return getTemplate(filename, true);
-            }
-
-        } catch (IOException e) {
-            return ResponseEntity.status(404).body("Error reading file: " + filename);
-        }
+        return getTemplate(filename, true);
     }
 
     @GetMapping(value = "/read-setting/{filename}", produces = "application/json")
     public ResponseEntity<String> getTemplate(@PathVariable("filename") String filename) {
-        try {
-
-            // 檢查是否使用 classpath (開發環境)
-            if (baseDirectory.startsWith("classpath:")) {
-                validFileExtention(filename);
-                String classpathPath = baseDirectory.replace("classpath:", "");
-                Resource resource = new ClassPathResource(classpathPath + filename);
-                if (!resource.exists()) {
-                    return ResponseEntity.status(404).body("File not found: " + filename);
-                }
-                String jsonContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-                return ResponseEntity.ok().body(jsonContent);
-            } else {
-                return getTemplate(filename, false);
-            }
-
-        } catch (IOException e) {
-            return ResponseEntity.status(404).body("Error reading file: " + filename);
-        }
+        return getTemplate(filename, false);
     }
 
 
@@ -195,42 +155,22 @@ public class TemplateController {
         try {
             validFileExtention(filename);
 
-            if (baseDirectory.startsWith("classpath:")) {
-                // 專案 resources 目錄內的檔案位置 (直接存取專案內的檔案)
-                Path resourcePath = Paths.get(baseDirectory, filename);
+            // 正式環境：從指定的目錄刪除
+            Path filePath = Paths.get(baseDirectory, filename);
 
-                if (Files.notExists(resourcePath)) {
-                    response.put("error", "File not found in development environment: " + filename);
-                    return ResponseEntity.status(404).body(response);
-                }
+            if (Files.notExists(filePath)) {
+                response.put("error", "File not found: " + filename);
+                return ResponseEntity.status(404).body(response);
+            }
 
-                boolean deleted = Files.deleteIfExists(resourcePath);
+            boolean deleted = Files.deleteIfExists(filePath);
 
-                if (deleted) {
-                    response.put("message", "File deleted successfully in development: " + filename);
-                    return ResponseEntity.ok(response);
-                } else {
-                    response.put("error", "Failed to delete file in development: " + filename);
-                    return ResponseEntity.status(500).body(response);
-                }
+            if (deleted) {
+                response.put("message", "File deleted successfully: " + filename);
+                return ResponseEntity.ok(response);
             } else {
-                // 正式環境：從指定的目錄刪除
-                Path filePath = Paths.get(baseDirectory, filename);
-
-                if (Files.notExists(filePath)) {
-                    response.put("error", "File not found: " + filename);
-                    return ResponseEntity.status(404).body(response);
-                }
-
-                boolean deleted = Files.deleteIfExists(filePath);
-
-                if (deleted) {
-                    response.put("message", "File deleted successfully: " + filename);
-                    return ResponseEntity.ok(response);
-                } else {
-                    response.put("error", "Failed to delete file: " + filename);
-                    return ResponseEntity.status(500).body(response);
-                }
+                response.put("error", "Failed to delete file: " + filename);
+                return ResponseEntity.status(500).body(response);
             }
         } catch (IOException e) {
             response.put("error", "Error processing file: " + e.getMessage());

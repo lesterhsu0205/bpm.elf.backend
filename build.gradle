@@ -24,6 +24,21 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.named("bootJar") {
+	layered {
+		enabled.set(true)
+	}
+	doLast {
+		println "Extracting Layered JAR..."
+		delete file("build/dependency")
+		mkdir("build/dependency")
+		copy {
+			from(zipTree(archiveFile.get().asFile))
+			into("build/dependency")
+		}
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

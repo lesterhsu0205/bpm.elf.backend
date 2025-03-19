@@ -1,12 +1,20 @@
 spring:
+  config:
+    import: optional:file:./version.txt
   application:
     name:com.line.bank.bxi.bpm.elf.backend
-#  devtools:
-#    restart:
-#      enabled: true
-#      additional-paths: src/main/java
-#    livereload:
-#      enabled: true
+  #  devtools:
+  #    restart:
+  #      enabled: true
+  #      additional-paths: src/main/java
+  #    livereload:
+  #      enabled: true
+
+info:
+  app:
+    name: bpm-elf-backend
+    version: ${spring.config.import}
+    description: "Spring Boot Actuator Example"
 
 server:
   port: 8080
@@ -16,4 +24,14 @@ server:
 
 file:
   base:
-    directory: ${user.dir}/src/main/resources/templates/
+#    directory: ${user.dir}/src/main/resources/templates/
+    directory: /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/templates
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

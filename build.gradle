@@ -1,44 +1,73 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.1'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.4.3'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.line.bank.bxi'
-version = '0.0.1-SNAPSHOT'
+// 讀取 version.txt
+def versionFile = file("version.txt")
+def appVersion = versionFile.text.trim()
+
+// 設定 project.version
+version = appVersion
+
+// 確保 version 正確顯示
+println "Building project version: ${version}"
+
+war {
+    archiveFileName = "bpm.elf.backend-${version}.war"
+    doLast {
+        println "Extracting JAR..."
+        delete file("build/dependency")
+        mkdir("build/dependency")
+        copy {
+            from zipTree(file("build/libs/bpm.elf.backend-${version}.war"))
+            into file("build/dependency")
+        }
+    }
+}
+
+bootWar {
+    enabled = false
+}
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'  // 使用外部 Tomcat
 }
 
+// 生成 jar 使用 embeded tomcat
 tasks.named("bootJar") {
-	layered {
-		enabled.set(true)
-	}
-	doLast {
-		println "Extracting Layered JAR..."
-		delete file("build/dependency")
-		mkdir("build/dependency")
-		copy {
-			from(zipTree(archiveFile.get().asFile))
-			into("build/dependency")
-		}
-	}
+    layered {
+        enabled.set(true)
+    }
+    doLast {
+        println "Extracting Layered JAR..."
+        delete file("build/dependency")
+        mkdir("build/dependency")
+        copy {
+            from(zipTree(archiveFile.get().asFile))
+            into("build/dependency")
+        }
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+mockEnv
+logs
+.DS_Store

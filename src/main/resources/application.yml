@@ -24,8 +24,7 @@ server:
 
 file:
   base:
-#    directory: ${user.dir}/src/main/resources/templates/
-    directory: /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/templates
+    directory: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/templates
 
 management:
   endpoints:

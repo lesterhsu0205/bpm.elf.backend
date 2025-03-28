@@ -59,7 +59,7 @@ public class TemplateController {
             return ResponseEntity.ok(resultList);
 
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", "Unable to read templates directory")));
+            return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", "Unable to read templates directory: " + baseDirectory)));
         }
     }
 
@@ -101,7 +101,7 @@ public class TemplateController {
             return ResponseEntity.ok(resultList);
 
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", "Unable to read templates directory")));
+            return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", "Unable to read templates directory: " + baseDirectory)));
         }
     }
 

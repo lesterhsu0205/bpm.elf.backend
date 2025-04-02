@@ -66,6 +66,11 @@ war {
             into("mockEnv/opt/apps/bpm-elf-backend")
         }
 
+        copy {
+            from("version.txt")
+            into("mockEnv/opt/apps/bpm-elf-backend")
+        }
+
         // FIXME: Tomcat's ROOT.xml 未來應由 ansible CD 處理
         copy {
             from("src/main/resources/tomcat/conf")

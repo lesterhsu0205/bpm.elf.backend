@@ -24,7 +24,7 @@ server:
 
 file:
   base:
-    directory: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/templates
+    directory: /data/bpm-elf-backend/templates
 
 management:
   endpoints:

@@ -29,10 +29,7 @@ services:
     #          cpus: "1"
     #          memory: "512M"
     volumes:
-      - ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml:/opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
-      - ./mockEnv/opt/apps/bpm-elf-backend/WEB-INF/classes/application.yml:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/application.yml
-      - ./mockEnv/opt/apps/bpm-elf-backend/WEB-INF/classes/logback-spring.xml:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/logback-spring.xml
-      - ./mockEnv/opt/apps/bpm-elf-backend/WEB-INF/classes/com:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/com  # source code
-      - ./mockEnv/opt/apps/bpm-elf-backend/WEB-INF/lib:/opt/sw/tomcat/webapps/ROOT/WEB-INF/lib # lib
-      - ./mockEnv/data/bpm-elf-backend/templates:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/templates # templates
-      - ./mockEnv/logs:/logs #log
+      - /opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml:/opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
+      - /opt/apps/bpm-elf-backend:/opt/sw/tomcat/webapps/ROOT
+      - /data/bpm-elf-backend:/data/bpm-elf-backend # templates
+      - /logs/bpm-elf-backend:/logs/bpm-elf-backend # logs

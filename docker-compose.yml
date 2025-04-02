@@ -2,13 +2,15 @@
 
 services:
   tomcat:
-    image: rhel8/tomcat10
+    image: rhel8/tomcat10_logback
     container_name: bpm-elf-backend-local
     ports:
       - "8080:8080"   # Tomcat 監聽 Web 請求
       - "8443:8443"
       - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
     environment:
+      - TZ=Asia/Taipei
+      - LOG_PATH=/logs
       - JPDA_ENABLED=true  # 只在開發模式啟用 JPDA
       - JPDA_ADDRESS=*:5005
       - JPDA_TRANSPORT=dt_socket
@@ -32,5 +34,5 @@ services:
       - ./build/resources/main/logback-spring.xml:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/logback-spring.xml
       - ./build/classes/java/main/com:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/com  # source code
       - ./build/ROOT/WEB-INF/lib:/opt/sw/tomcat/webapps/ROOT/WEB-INF/lib # lib
-      - ./src/main/resources/templates:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/templates # templates
-      - ./mockEnv/logs:/logs #log
+      - ./src/main/resources/templates:/data/bpm-elf-backend/templates # templates
+      - ./mockEnv/logs/bpm-elf-backend:/logs/bpm-elf-backend # logs

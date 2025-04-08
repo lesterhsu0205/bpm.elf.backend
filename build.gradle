@@ -85,10 +85,10 @@ bootWar {
     enabled = false
 }
 
-// 這段是排除 resources 不進入 war
+// 這段是排除 resources 不進入 war, 這是 resources 相對路徑，不需加 src/main/resources
 processResources {
-    exclude 'templates/**' // 注意：這是 resources 相對路徑，不需加 src/main/resources
-    exclude 'tomcat/**' // 本機 debug in tomcat 容器需要此檔，但包版可不包進去，CD 時處理
+    exclude 'templates/**'
+    exclude 'tomcat/**'
 }
 
 // 生成 jar 使用 embeded tomcat

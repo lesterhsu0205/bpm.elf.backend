@@ -142,8 +142,7 @@ public class TemplateController {
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            response.put("error", "Error writing file: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(500).body(Map.of("error", "Error writing file: " + e.getMessage()));
         }
     }
 
@@ -173,8 +172,7 @@ public class TemplateController {
                 return ResponseEntity.status(500).body(response);
             }
         } catch (IOException e) {
-            response.put("error", "Error processing file: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(500).body(Map.of("error", "Error processing file: " + e.getMessage()));
         }
     }
 
@@ -232,7 +230,7 @@ public class TemplateController {
                         return enumJson; // 直接替換當前節點
                     } catch (Exception e) {
                         // 找不到時，保留原始 JSON
-                        System.out.println(e);
+//                        System.out.println(e);
                     }
                 } else {
                     objectNode.set(key, processEnums(value));
@@ -313,7 +311,7 @@ public class TemplateController {
             String jsonContent;
 
             // 正式環境：直接從文件系統讀取
-            String filePath = isCompose ? baseDirectory + "compose/" + filename : baseDirectory + filename;
+            String filePath = isCompose ? baseDirectory + "/compose/" + filename : baseDirectory + "/" + filename;
             JsonNode jsonNode = readJson(Paths.get(filePath));
 
             Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
@@ -327,7 +325,7 @@ public class TemplateController {
             return ResponseEntity.ok().body(jsonContent);
 
         } catch (IOException e) {
-            return ResponseEntity.status(404).body("Error reading file: " + filename);
+            return ResponseEntity.status(404).body("Error reading file: " + filename + ", cause: " + e);
         }
     }
 }

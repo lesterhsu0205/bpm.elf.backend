@@ -6,12 +6,7 @@ plugins {
 }
 
 group = 'com.line.bank.bxi'
-// 讀取 version.txt
-def versionFile = file("version.txt")
-def appVersion = versionFile.text.trim()
-
-// 設定 project.version
-version = appVersion
+version = '0.0.2.SNAPSHOT'
 
 // 確保 version 正確顯示
 println "Building project version: ${version}"
@@ -20,7 +15,7 @@ springBoot {
     buildInfo {
         properties {
             artifact = 'bpm-elf-backend'
-            version = appVersion
+            version
             group
             name = 'BPM ELF Backend API'
         }
@@ -46,54 +41,67 @@ dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'  // 使用外部 Tomcat
 }
 
-// 這是 war 設定 & 額外複製 templates
+// 排除 resources 不進入 war, 這是 resources 相對路徑，不需加 src/main/resources
+processResources {
+    exclude 'templates/**'
+    exclude 'tomcat/**'
+}
+
 war {
     archiveFileName = "bpm.elf.backend-${version}.war"
 
-
     doLast {
-        println "Extracting WAR..."
+        println 'Extracting WAR...'
 
-        // 解壓縮 war
-        delete file("build/ROOT")
-        mkdir("build/ROOT")
+        mkdir('build/ROOT')
         copy {
             from zipTree(archiveFile.get().asFile)
-            into file("build/ROOT")
+            into file('build/ROOT')
         }
 
-        // FIXME: 模擬 ansible CD,  未來應由 ansible 處理
-        delete file("mockEnv/opt")
+        delete file('mockEnv')
+        delete file('logs')
 
         // templates 未來手動第一次搬運即可(不打包進 war，是額外拷貝出去)
         copy {
-            from("src/main/resources/templates")
-            into("mockEnv/data/bpm-elf-backend/templates")
-        }
-
-        // golden image 配置
-        copy {
-            from("build/ROOT")
-            into("mockEnv/opt/apps/bpm-elf-backend")
+            from('src/main/resources/templates')
+            into('mockEnv/data/bpm-elf-backend/templates')
         }
 
         copy {
-            from("version.txt")
-            into("mockEnv/opt/apps/bpm-elf-backend")
+            from('build/ROOT')
+            into('mockEnv/opt/apps/bpm-elf-backend')
         }
 
         copy {
-            from("bin")
-            into("mockEnv/opt/sw/tomcat/bpm-elf-backend/bin")
+            from('version.txt')
+            into('mockEnv/opt/apps/bpm-elf-backend')
+        }
+
+        copy {
+            from('bin')
+            into('mockEnv/opt/sw/tomcat/bpm-elf-backend/bin')
         }
 
         // hot reload, tomcat's ROOT.xml
 //        copy {
-//            from("src/main/resources/tomcat/conf")
-//            into("mockEnv/opt/sw/tomcat/conf")
+//            from('src/main/resources/tomcat/conf')
+//            into('mockEnv/opt/sw/tomcat/conf')
 //        }
+    }
 
+    finalizedBy 'writeVersionFile'
+}
 
+/**
+ * Task：將 project.version 寫入 version.txt
+ */
+tasks.register('writeVersionFile') {
+    description = 'Writes project.version into version.txt at project root'
+    doLast {
+        def file = project.layout.projectDirectory.file('version.txt').asFile
+        file.text = project.version.toString()
+        println "Wrote version ${project.version} to ${file}"
     }
 }
 
@@ -101,24 +109,17 @@ bootWar {
     enabled = false
 }
 
-// 這段是排除 resources 不進入 war, 這是 resources 相對路徑，不需加 src/main/resources
-processResources {
-    exclude 'templates/**'
-    exclude 'tomcat/**'
-}
-
 // 生成 jar 使用 embedded tomcat
-tasks.named("bootJar") {
+tasks.named('bootJar') {
     layered {
         enabled.set(true)
     }
     doLast {
-        println "Extracting Layered JAR..."
-        delete file("build/ROOT")
-        mkdir("build/ROOT")
+        println 'Extracting Layered JAR...'
+        mkdir('build/ROOT')
         copy {
             from(zipTree(archiveFile.get().asFile))
-            into("build/ROOT")
+            into('build/ROOT')
         }
     }
 }

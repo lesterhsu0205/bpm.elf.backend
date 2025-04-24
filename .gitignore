@@ -40,3 +40,4 @@ out/
 mockEnv
 logs
 .DS_Store
+target

@@ -31,15 +31,15 @@ services:
     volumes:
       # artifacts
       - type: bind
-        source: ./mockEnv/opt/apps/bpm-elf-backend
+        source: /opt/apps/bpm-elf-backend
         target: /opt/sw/tomcat/webapps/ROOT
       # templates
       - type: bind
-        source: ./mockEnv/data/bpm-elf-backend
+        source: /data/bpm-elf-backend
         target: /data/bpm-elf-backend
       # logs
       - type: bind
-        source: ./mockEnv/logs/bpm-elf-backend.{{.Task.Slot}}
+        source: /logs/bpm-elf-backend.{{.Task.Slot}}
         target: /logs/bpm-elf-backend
       # only hotreload
 #      - type: bind

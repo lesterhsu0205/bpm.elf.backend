@@ -2,34 +2,46 @@
 
 services:
   tomcat:
-    image: rhel8/tomcat10_logback
-    container_name: bpm-elf-backend-dev
+    image: rhel8/tomcat10
+    #    container_name: bpm-elf-backend-dev   # swarm 底下沒用
     ports:
-      - "8080:8080"   # Tomcat 監聽 Web 請求
       - "18743:18743"
-    #      - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
+    #          - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
     environment:
       - TZ=Asia/Taipei
       - LOG_PATH=/logs
-    #      - JPDA_ENABLED=true  # 只在開發模式啟用 JPDA
-    #      - JPDA_ADDRESS=*:5005
-    #      - JPDA_TRANSPORT=dt_socket
-    #    deploy:
-    #      replicas: 1
-    #      restart_policy:
-    #        condition: on-failure
-    #        delay: 10s  # 等待 10 秒後再重啟
-    #        max_attempts: 5  # 最多重啟 5 次
-    #        window: 60s  # 60 秒內最多嘗試 max_attempts 次
-    #      update_config:
-    #        parallelism: 1 # 每次更新 1 個容器
-    #        delay: 10s
-    #      resources:
-    #        limits: # 個別容器
-    #          cpus: "1"
-    #          memory: "512M"
+    #          - JPDA_ENABLED=true  # 只在開發模式啟用 JPDA
+    #          - JPDA_ADDRESS=*:5005
+    #          - JPDA_TRANSPORT=dt_socket
+    deploy:
+      replicas: ${REPLICAS:-2}
+      restart_policy:
+        condition: on-failure
+        delay: 10s  # 等待 10 秒後再重啟
+        max_attempts: 5  # 最多重啟 5 次
+        window: 60s  # 60 秒內最多嘗試 max_attempts 次
+      update_config:
+        parallelism: 1 # 每次更新 1 個容器
+        delay: 5s
+        order: start-first
+      resources:
+        limits: # 個別容器
+          cpus: "1"
+          memory: "512M"
     volumes:
-      - /opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml:/opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
-      - /opt/apps/bpm-elf-backend:/opt/sw/tomcat/webapps/ROOT
-      - /data/bpm-elf-backend:/data/bpm-elf-backend # templates
-      - /logs/bpm-elf-backend:/logs/bpm-elf-backend # logs
+      # artifacts
+      - type: bind
+        source: ./mockEnv/opt/apps/bpm-elf-backend
+        target: /opt/sw/tomcat/webapps/ROOT
+      # templates
+      - type: bind
+        source: ./mockEnv/data/bpm-elf-backend
+        target: /data/bpm-elf-backend
+      # logs
+      - type: bind
+        source: ./mockEnv/logs/bpm-elf-backend.{{.Task.Slot}}
+        target: /logs/bpm-elf-backend
+      # only hotreload
+#      - type: bind
+#        source: ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
+#        target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml

@@ -16,6 +16,17 @@ version = appVersion
 // 確保 version 正確顯示
 println "Building project version: ${version}"
 
+springBoot {
+    buildInfo {
+        properties {
+            artifact = 'bpm-elf-backend'
+            version = appVersion
+            group
+            name = 'BPM ELF Backend API'
+        }
+    }
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -39,7 +50,7 @@ dependencies {
 war {
     archiveFileName = "bpm.elf.backend-${version}.war"
 
-    // 模擬 ansible CD
+
     doLast {
         println "Extracting WAR..."
 
@@ -51,16 +62,16 @@ war {
             into file("build/ROOT")
         }
 
+        // FIXME: 模擬 ansible CD,  未來應由 ansible 處理
         delete file("mockEnv/opt")
 
-        // FIXME: templates 未來手動第一次搬運即可
-        // 複製 templates（不打包進 war，是額外拷貝出去）
+        // templates 未來手動第一次搬運即可(不打包進 war，是額外拷貝出去)
         copy {
             from("src/main/resources/templates")
             into("mockEnv/data/bpm-elf-backend/templates")
         }
 
-        // FIXME: golden image 配置，未來應由 ansible CD 處理
+        // golden image 配置
         copy {
             from("build/ROOT")
             into("mockEnv/opt/apps/bpm-elf-backend")
@@ -71,11 +82,16 @@ war {
             into("mockEnv/opt/apps/bpm-elf-backend")
         }
 
-        // FIXME: Tomcat's ROOT.xml 未來應由 ansible CD 處理
         copy {
-            from("src/main/resources/tomcat/conf")
-            into("mockEnv/opt/sw/tomcat/10/conf")
+            from("bin")
+            into("mockEnv/opt/sw/tomcat/bpm-elf-backend/bin")
         }
+
+        // hot reload, tomcat's ROOT.xml
+//        copy {
+//            from("src/main/resources/tomcat/conf")
+//            into("mockEnv/opt/sw/tomcat/conf")
+//        }
 
 
     }
@@ -91,7 +107,7 @@ processResources {
     exclude 'tomcat/**'
 }
 
-// 生成 jar 使用 embeded tomcat
+// 生成 jar 使用 embedded tomcat
 tasks.named("bootJar") {
     layered {
         enabled.set(true)

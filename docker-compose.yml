@@ -2,11 +2,11 @@
 
 services:
   tomcat:
-    image: rhel8/tomcat10_logback
+    image: rhel8/tomcat10
     container_name: bpm-elf-backend-local
     ports:
       - "8080:8080"   # Tomcat 監聽 Web 請求
-      - "8443:8443"
+      - "18743:18743"
       - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
     environment:
       - TZ=Asia/Taipei
@@ -14,25 +14,48 @@ services:
       - JPDA_ENABLED=true  # 只在開發模式啟用 JPDA
       - JPDA_ADDRESS=*:5005
       - JPDA_TRANSPORT=dt_socket
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
-#        delay: 10s  # 等待 10 秒後再重啟
-#        max_attempts: 5  # 最多重啟 5 次
-#        window: 60s  # 60 秒內最多嘗試 max_attempts 次
-#      update_config:
-#        parallelism: 1 # 每次更新 1 個容器
-#        delay: 10s
-#      resources:
-#        limits: # 個別容器
-#          cpus: "1"
-#          memory: "512M"
+    #    deploy:
+    #      replicas: 1
+    #      restart_policy:
+    #        condition: on-failure
+    #        delay: 10s  # 等待 10 秒後再重啟
+    #        max_attempts: 5  # 最多重啟 5 次
+    #        window: 60s  # 60 秒內最多嘗試 max_attempts 次
+    #      update_config:
+    #        parallelism: 1 # 每次更新 1 個容器
+    #        delay: 10s
+    #      resources:
+    #        limits: # 個別容器
+    #          cpus: "1"
+    #          memory: "512M"
     volumes:
-      - ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml:/opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
-      - ./build/resources/main/application.yml:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/application.yml
-      - ./build/resources/main/logback-spring.xml:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/logback-spring.xml
-      - ./build/classes/java/main/com:/opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/com  # source code
-      - ./build/ROOT/WEB-INF/lib:/opt/sw/tomcat/webapps/ROOT/WEB-INF/lib # lib
-      - ./src/main/resources/templates:/data/bpm-elf-backend/templates # templates
-      - ./mockEnv/logs/bpm-elf-backend:/logs/bpm-elf-backend # logs
+      # artifacts
+      - type: bind
+        source: ./mockEnv/opt/apps/bpm-elf-backend
+        target: /opt/sw/tomcat/webapps/ROOT
+      # source code
+      - type: bind
+        source: ./build/classes/java/main/com
+        target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/com
+      - type: bind
+        source: ./build/resources/main/application.yml
+        target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/application.yml
+      - type: bind
+        source: ./build/resources/main/logback-spring.xml
+        target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/logback-spring.xml
+      # lib
+      - type: bind
+        source: ./build/ROOT/WEB-INF/lib
+        target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/lib
+      # templates
+      - type: bind
+        source: ./src/main/resources/templates
+        target: /data/bpm-elf-backend/templates
+      # logs
+      - type: bind
+        source: ./mockEnv/logs/bpm-elf-backend.{{.Task.Slot}}
+        target: /logs/bpm-elf-backend
+      # only hotreload
+      # - type: bind
+      #   source: ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
+      #   target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml

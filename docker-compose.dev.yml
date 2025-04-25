@@ -31,17 +31,17 @@ services:
     volumes:
       # artifacts
       - type: bind
-        source: /opt/apps/bpm-elf-backend
+        source: ${ROOT_DIR}/opt/apps/bpm-elf-backend
         target: /opt/sw/tomcat/webapps/ROOT
       # templates
       - type: bind
-        source: /data/bpm-elf-backend
+        source: ${ROOT_DIR}/data/bpm-elf-backend
         target: /data/bpm-elf-backend
       # logs
       - type: bind
-        source: /logs/bpm-elf-backend.{{.Task.Slot}}
+        source: ${ROOT_DIR}/logs/bpm-elf-backend.{{.Task.Slot}}
         target: /logs/bpm-elf-backend
       # only hotreload
 #      - type: bind
-#        source: ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
+#        source: ${ROOT_DIR}/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
 #        target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml

@@ -1,31 +1,14 @@
-# 使用 bootJar, embeded tomcat 的打包方式
-#FROM openjdk:17-jdk-alpine
-#RUN addgroup -S spring && adduser -S spring -G spring
-
-
-FROM registry.access.redhat.com/ubi8/openjdk-17-runtime
+FROM rhel8/tomcat10:latest
 
 USER root
-RUN groupadd -r spring && useradd -r -g spring spring
 
-USER spring:spring
+ENV GV_SW_DIR=/opt/sw
+ENV CATALINA_HOME=${GV_SW_DIR}/tomcat
 
-WORKDIR /app
+WORKDIR ${CATALINA_HOME}
 
-#ARG JAR_FILE=build/libs/*.jar
-#COPY ${JAR_FILE} app.jar
-#
-#ENTRYPOINT ["java", "-jar", "/app.jar"]
+COPY target/ROOT webapps/ROOT
 
-ARG DEPENDENCY=build/dependency
-COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY ${DEPENDENCY}/BOOT-INF/classes /app
-COPY ${DEPENDENCY}/META-INF /app/META-INF
+RUN chown -R wasadmin:was webapps/ROOT
 
-# 設定 "/app/templates/" 目錄
-RUN mkdir -p /app/templates
-
-# 設定 "/app/templates/" 目錄為 Volume，允許掛載外部資料
-VOLUME /app/templates
-
-ENTRYPOINT ["java","-cp","/app:/app/lib/*","com.line.bank.bxi.bpm.elf.backend.Application"]
+USER wasadmin

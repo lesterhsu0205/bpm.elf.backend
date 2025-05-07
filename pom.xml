@@ -6,8 +6,7 @@
 
     <groupId>com.line.bank.bxi</groupId>
     <artifactId>bpm-elf-backend</artifactId>
-    <!-- 版本由外部 version.txt 讀取 -->
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>BPM ELF Backend API</name>
 
@@ -119,15 +118,15 @@
                                     <fileset dir="src/main/resources/templates"/>
                                 </copy>
 
-                                <copy todir="mockEnv/opt/apps/${project.artifactId}">
-                                    <fileset dir="${project.build.directory}/ROOT"/>
-                                </copy>
+<!--                                <copy todir="mockEnv/opt/apps/${project.artifactId}">-->
+<!--                                    <fileset dir="${project.build.directory}/ROOT"/>-->
+<!--                                </copy>-->
 
                                 <copy file="version.txt"
-                                      todir="mockEnv/opt/apps/${project.artifactId}"/>
+                                      todir="${project.build.directory}/ROOT"/>
 
                                 <!-- 複製 bin scripts -->
-                                <copy todir="mockEnv/opt/sw/tomcat/${project.artifactId}/bin">
+                                <copy todir="mockEnv/opt/sw/${project.artifactId}/{host}-01/tomcat/bin">
                                     <fileset dir="bin"/>
                                 </copy>
                             </target>
@@ -164,6 +163,66 @@
                         </goals>
                         <configuration>
                             <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 在 package 階段執行 docker build -t bpm-elf-backend . -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>docker-rmi-by-repo</id>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>
+                                    docker images \
+                                    --filter reference='${project.artifactId}*' \
+                                    --format '{{.Repository}}:{{.Tag}}' \
+                                    | xargs -r docker rmi
+                                </argument>
+                            </arguments>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                        </configuration>
+                    </execution>
+<!--                    <execution>-->
+<!--                        <id>docker-clean</id>-->
+<!--                        <phase>pre-clean</phase>-->
+<!--                        <goals><goal>exec</goal></goals>-->
+<!--                        <configuration>-->
+<!--                            <executable>docker</executable>-->
+<!--                            <arguments>-->
+<!--                                <argument>rmi</argument>-->
+<!--                                <argument>-f</argument>-->
+<!--                                <argument>${project.artifactId}</argument>-->
+<!--                            </arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-t</argument>
+                                <argument>${project.artifactId}:${project.version}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                            <!-- option：執行路徑，預設根目錄 -->
+                            <workingDirectory>${project.basedir}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>

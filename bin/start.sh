@@ -11,6 +11,12 @@ LOCAL_MODE=0
 ROOT_DIR=""
 COMPOSE_FILE="docker-compose.dev.yml"
 APP_NAME="bpm-elf-backend"
+VERSION=$(< version.txt)
+# 去除首尾空白
+VERSION=${VERSION##+([[:space:]])}
+VERSION=${VERSION%%+([[:space:]])}
+
+echo "version：$VERSION"
 
 if [[ ! -f "$COMPOSE_FILE" ]]; then
   echo "Error: Compose file '$COMPOSE_FILE' not found." >&2
@@ -65,9 +71,9 @@ if [[ $LOCAL_MODE -eq 1 ]]; then
 
   # Step 1: 建立基底目錄
   BASE_DIRS=(
-    "$ROOT_DIR/opt/sw/tomcat"
+    "$ROOT_DIR/opt/sw/${APP_NAME}/{host}-01/tomcat"
     "$ROOT_DIR/data/${APP_NAME}"
-    "$ROOT_DIR/opt/apps/${APP_NAME}"
+#    "$ROOT_DIR/opt/apps/${APP_NAME}"
   )
 
   for d in "${BASE_DIRS[@]}"; do
@@ -79,7 +85,7 @@ if [[ $LOCAL_MODE -eq 1 ]]; then
 
   # Step 2: 建 logs 子目錄
   for ((i=1; i<=REPLICAS; i++)); do
-    LOG_DIR="$ROOT_DIR/logs/${APP_NAME}.$i"
+    LOG_DIR="$ROOT_DIR/logs/${APP_NAME}/{host}-0$i"
     if [[ ! -d "$LOG_DIR" ]]; then
       mkdir -p "$LOG_DIR"
       echo "  • Created → $LOG_DIR"
@@ -89,7 +95,7 @@ fi
 
 # Step 3: 部署 Swarm Stack
 # 確保 docker-compose.dev.yml 裡 deploy.replicas: ${REPLICAS:-2} 用到環境變數
-export REPLICAS ROOT_DIR
+export REPLICAS ROOT_DIR VERSION
 
 docker stack deploy -c "$COMPOSE_FILE" "$APP_NAME" --detach=false
 

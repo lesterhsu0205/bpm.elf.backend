@@ -1,12 +1,12 @@
-# local 開發時使用 rhel8/tomcat11 image 當作 ap container, 可用於 debug mode
-
 services:
   tomcat:
-    image: rhel8/tomcat10
-    #    container_name: bpm-elf-backend-dev   # swarm 底下沒用
-    ports:
-      - "18743:18743"
-    #          - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
+    image: bpm-elf-backend:${VERSION}
+#    container_name: bpm-elf-backend-dev   # swarm 底下沒用
+#    ports:
+#      - "18743:18743"
+#      - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
+#    networks:
+#      - webnet   # 自定義 overlay 網路，用於 compose 間互連
     environment:
       - TZ=Asia/Taipei
       - LOG_PATH=/logs
@@ -30,18 +30,48 @@ services:
           memory: "512M"
     volumes:
       # artifacts
-      - type: bind
-        source: ${ROOT_DIR}/opt/apps/bpm-elf-backend
-        target: /opt/sw/tomcat/webapps/ROOT
+#      - type: bind
+#        source: ${ROOT_DIR}/opt/apps/bpm-elf-backend
+#        target: /opt/sw/tomcat/webapps/ROOT
       # templates
       - type: bind
         source: ${ROOT_DIR}/data/bpm-elf-backend
         target: /data/bpm-elf-backend
       # logs
       - type: bind
-        source: ${ROOT_DIR}/logs/bpm-elf-backend.{{.Task.Slot}}
+        source: ${ROOT_DIR}/logs/bpm-elf-backend/{host}-0{{.Task.Slot}}
         target: /logs/bpm-elf-backend
       # only hotreload
 #      - type: bind
 #        source: ${ROOT_DIR}/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
 #        target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
+
+  nginx:
+    image: nginx:1.28.0-alpine-slim
+    ports:
+      - "18743:18743"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#    networks:
+#      - webnet
+    environment:
+      - TZ=Asia/Taipei
+    deploy:
+      replicas: ${REPLICAS:-2}
+      restart_policy:
+        condition: on-failure
+        delay: 10s  # 等待 10 秒後再重啟
+        max_attempts: 5  # 最多重啟 5 次
+        window: 60s  # 60 秒內最多嘗試 max_attempts 次
+      update_config:
+        parallelism: 1 # 每次更新 1 個容器
+        delay: 5s
+        order: start-first
+      resources:
+        limits: # 個別容器
+          cpus: "1"
+          memory: "512M"
+
+#networks:
+#  webnet:
+#    external: true

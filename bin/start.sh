@@ -6,12 +6,19 @@ set -euo pipefail
 #   sudo ./deploy.sh [-r|--replicas N] [--local]
 
 # 預設參數
+HOSTNAME=$(hostname)
 REPLICAS=2
 LOCAL_MODE=0
 ROOT_DIR=""
 COMPOSE_FILE="docker-compose.dev.yml"
 APP_NAME="bpm-elf-backend"
-VERSION=$(< version.txt)
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+COMPOSE_FILE="$SCRIPT_DIR/../../docker-compose.dev.yml"
+VERSION_FILE="$SCRIPT_DIR/../../app/version.txt"
+
+VERSION=$(< "${VERSION_FILE}")
 # 去除首尾空白
 VERSION=${VERSION##+([[:space:]])}
 VERSION=${VERSION%%+([[:space:]])}
@@ -31,6 +38,7 @@ Usage: $0 [options]
 Options:
   -r, --replicas N   指定 replicas 數量 (default: $REPLICAS)
       --local        本機測試
+      --target-host  HOSTNAME
   -h, --help         顯示本說明並退出
 EOF
   exit 1
@@ -50,8 +58,19 @@ while [[ $# -gt 0 ]]; do
       ;;
     --local)
       LOCAL_MODE=1
-      ROOT_DIR="./mockEnv"
+      ROOT_DIR="$SCRIPT_DIR/../../../../../.."
+      echo "ROOT_DIR：$ROOT_DIR"
       shift
+      ;;
+    --target-host)
+      if [[ -n "${2-}" ]]; then
+        HOSTNAME="$2"
+        echo "This host is $HOSTNAME"
+        shift 2
+      else
+        echo "Error: '--target-host' 需要指定目標。" >&2
+        usage
+      fi
       ;;
     -h|--help)
       usage
@@ -71,9 +90,9 @@ if [[ $LOCAL_MODE -eq 1 ]]; then
 
   # Step 1: 建立基底目錄
   BASE_DIRS=(
-    "$ROOT_DIR/opt/sw/${APP_NAME}/{host}-01/tomcat"
-    "$ROOT_DIR/data/${APP_NAME}"
-#    "$ROOT_DIR/opt/apps/${APP_NAME}"
+    "$ROOT_DIR/opt/sw/$APP_NAME/$HOSTNAME/tomcat"
+    "$ROOT_DIR/data/$APP_NAME/$HOSTNAME"
+#    "$ROOT_DIR/opt/apps/$APP_NAME"
   )
 
   for d in "${BASE_DIRS[@]}"; do
@@ -85,7 +104,7 @@ if [[ $LOCAL_MODE -eq 1 ]]; then
 
   # Step 2: 建 logs 子目錄
   for ((i=1; i<=REPLICAS; i++)); do
-    LOG_DIR="$ROOT_DIR/logs/${APP_NAME}/{host}-0$i"
+    LOG_DIR="$ROOT_DIR/logs/$APP_NAME/$HOSTNAME.$i"
     if [[ ! -d "$LOG_DIR" ]]; then
       mkdir -p "$LOG_DIR"
       echo "  • Created → $LOG_DIR"
@@ -95,7 +114,7 @@ fi
 
 # Step 3: 部署 Swarm Stack
 # 確保 docker-compose.dev.yml 裡 deploy.replicas: ${REPLICAS:-2} 用到環境變數
-export REPLICAS ROOT_DIR VERSION
+export REPLICAS ROOT_DIR VERSION HOSTNAME
 
 docker stack deploy -c "$COMPOSE_FILE" "$APP_NAME" --detach=false
 

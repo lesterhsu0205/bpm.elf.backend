@@ -110,25 +110,45 @@
                                 <unzip src="${project.build.directory}/${project.build.finalName}.war"
                                        dest="${project.build.directory}/ROOT"/>
 
-                                <delete dir="mockEnv"/>
                                 <delete dir="logs"/>
+                                <delete dir="mockEnv/data"/>
+                                <delete dir="mockEnv/logs"/>
+                                <delete dir="mockEnv/opt/sw/bpm-elf-backend"/>
 
                                 <!-- templates 未來手動第一次搬運即可(不打包進 war，是額外拷貝出去) -->
-                                <copy todir="mockEnv/data/${project.artifactId}/templates">
+                                <copy todir="mockEnv/data/${project.artifactId}/${env.HOSTNAME}/templates">
                                     <fileset dir="src/main/resources/templates"/>
                                 </copy>
 
-<!--                                <copy todir="mockEnv/opt/apps/${project.artifactId}">-->
-<!--                                    <fileset dir="${project.build.directory}/ROOT"/>-->
-<!--                                </copy>-->
+                                <!-- artifact-->
+                                <copy todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/app/target/ROOT">
+                                    <fileset dir="${project.build.directory}/ROOT"/>
+                                </copy>
+
+                                <copy file="Dockerfile"
+                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/app"/>
 
                                 <copy file="version.txt"
                                       todir="${project.build.directory}/ROOT"/>
 
-                                <!-- 複製 bin scripts -->
-                                <copy todir="mockEnv/opt/sw/${project.artifactId}/{host}-01/tomcat/bin">
+                                <copy file="version.txt"
+                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/app"/>
+
+                                <copy file="docker-compose.dev.yml"
+                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}"/>
+
+                                <copy file="nginx.conf"
+                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/nginx"/>
+
+                                <!-- bin scripts -->
+                                <copy todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/tomcat/bin">
                                     <fileset dir="bin"/>
                                 </copy>
+
+                                <!-- 2. 設定 script 755 -->
+                                <chmod perm="755">
+                                    <fileset dir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/tomcat/bin"/>
+                                </chmod>
                             </target>
                         </configuration>
                     </execution>
@@ -194,19 +214,6 @@
                             <workingDirectory>${project.basedir}</workingDirectory>
                         </configuration>
                     </execution>
-<!--                    <execution>-->
-<!--                        <id>docker-clean</id>-->
-<!--                        <phase>pre-clean</phase>-->
-<!--                        <goals><goal>exec</goal></goals>-->
-<!--                        <configuration>-->
-<!--                            <executable>docker</executable>-->
-<!--                            <arguments>-->
-<!--                                <argument>rmi</argument>-->
-<!--                                <argument>-f</argument>-->
-<!--                                <argument>${project.artifactId}</argument>-->
-<!--                            </arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
                     <execution>
                         <id>docker-build</id>
                         <phase>package</phase>
@@ -222,7 +229,7 @@
                                 <argument>.</argument>
                             </arguments>
                             <!-- option：執行路徑，預設根目錄 -->
-                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <workingDirectory>mockEnv/opt/sw/bpm-elf-backend/${env.HOSTNAME}/app</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>

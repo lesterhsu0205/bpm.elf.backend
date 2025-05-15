@@ -1,11 +1,10 @@
 # local 開發時使用 rhel8/tomcat11 image 當作 ap container, 可用於 debug mode
 
 services:
-  tomcat:
+  rest:
     image: rhel8/tomcat10
     container_name: bpm-elf-backend-local
     ports:
-      - "8080:8080"   # Tomcat 監聽 Web 請求
       - "18743:18743"
       - "5005:5005"   # 讓 IDE 透過 JPDA 連線 Debug
     environment:
@@ -30,9 +29,9 @@ services:
     #          memory: "512M"
     volumes:
       # artifacts
-      - type: bind
-        source: ./mockEnv/opt/apps/bpm-elf-backend
-        target: /opt/sw/tomcat/webapps/ROOT
+#      - type: bind
+#        source: ./mockEnv/opt/apps/bpm-elf-backend
+#        target: /opt/sw/tomcat/webapps/ROOT
       # source code maven 專案需把 ./build 改成 ./target
       - type: bind
         source: ./build/classes/java/main/com
@@ -45,7 +44,7 @@ services:
         target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/classes/logback-spring.xml
       # lib
       - type: bind
-        source: ./build/ROOT/WEB-INF/lib
+        source: ./target/ROOT/WEB-INF/lib
         target: /opt/sw/tomcat/webapps/ROOT/WEB-INF/lib
       # templates
       - type: bind
@@ -53,9 +52,9 @@ services:
         target: /data/bpm-elf-backend/templates
       # logs
       - type: bind
-        source: ./mockEnv/logs/bpm-elf-backend.{{.Task.Slot}}
+        source: ./mockEnv/logs/bpm-elf-backend/localhost
         target: /logs/bpm-elf-backend
       # only hotreload
-      # - type: bind
-      #   source: ./mockEnv/opt/sw/tomcat/10/conf/Catalina/localhost/ROOT.xml
-      #   target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml
+      - type: bind
+        source: ./src/main/resources/tomcat/conf/Catalina/localhost/ROOT.xml
+        target: /opt/sw/tomcat/conf/Catalina/localhost/ROOT.xml

@@ -138,7 +138,7 @@
                                       todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}"/>
 
                                 <copy file="nginx.conf"
-                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/nginx"/>
+                                      todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/nginx/config"/>
 
                                 <!-- bin scripts -->
                                 <copy todir="mockEnv/opt/sw/${project.artifactId}/${env.HOSTNAME}/tomcat/bin">

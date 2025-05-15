@@ -52,7 +52,7 @@ services:
       - "18743:18743"
     volumes:
       - type: bind
-        source: ${ROOT_DIR}/opt/sw/bpm-elf-backend/${HOSTNAME}/nginx/nginx.conf
+        source: ${ROOT_DIR}/opt/sw/bpm-elf-backend/${HOSTNAME}/nginx/config/nginx.conf
         target: /etc/nginx/nginx.conf
         read_only: true
 #    networks:

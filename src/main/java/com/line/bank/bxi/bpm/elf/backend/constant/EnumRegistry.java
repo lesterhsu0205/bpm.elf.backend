@@ -14,6 +14,7 @@ public class EnumRegistry {
         // 註冊所有 Enum 到 MAP
         registerEnum(Dropdown.values());
         registerEnum(Text.values());
+        registerEnum(Radio.values());
     }
 
     private static void registerEnum(ComponentEnum[] values) {

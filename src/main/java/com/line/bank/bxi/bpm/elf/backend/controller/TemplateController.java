@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.line.bank.bxi.bpm.elf.backend.constant.ComponentEnum;
 import com.line.bank.bxi.bpm.elf.backend.constant.EnumRegistry;
+import com.line.bank.bxi.bpm.elf.backend.service.TicketProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,9 @@ public class TemplateController {
     // 從 application.yml 中讀取設定的 BASE_DIRECTORY
     @Value("${file.base.directory}")
     private String baseDirectory;
+
+    @Autowired
+    private TicketProcessor ticketProcessor;
 
     @GetMapping("/read-settings-raw")
     public ResponseEntity<List<Map<String, Object>>> readAllRawTemplates() {
@@ -319,6 +324,7 @@ public class TemplateController {
 
             jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
             jsonNode = processEnums(jsonNode);
+            jsonNode = ticketProcessor.process(jsonNode);
             jsonContent = objectMapper.writeValueAsString(jsonNode);
 
 

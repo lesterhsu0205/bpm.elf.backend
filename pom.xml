@@ -206,7 +206,7 @@
                                 <argument>-c</argument>
                                 <argument>
                                     docker images \
-                                    --filter reference='${project.artifactId}*' \
+                                    --filter reference='bpm-elf-*' \
                                     --format '{{.Repository}}:{{.Tag}}' \
                                     | xargs -r docker rmi
                                 </argument>
@@ -215,7 +215,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>docker-build</id>
+                        <id>docker-build-rest</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -230,6 +230,24 @@
                             </arguments>
                             <!-- option：執行路徑，預設根目錄 -->
                             <workingDirectory>mockEnv/opt/sw/bpm-elf-backend/${env.HOSTNAME}/app</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>docker-build-web</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-t</argument>
+                                <argument>bpm-elf-frontend:${project.version}</argument>
+                                <argument>.</argument>
+                            </arguments>
+                            <!-- option：執行路徑，預設根目錄 -->
+                            <workingDirectory>mockEnv/opt/sw/bpm-elf-frontend/${env.HOSTNAME}/app</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>

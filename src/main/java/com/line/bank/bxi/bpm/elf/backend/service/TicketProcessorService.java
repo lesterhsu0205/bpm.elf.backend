@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * TicketProcessor: 處理 JSON 中的 tickets 陣列，合併重複欄位到 "基本資料" 票據
+ * TicketProcessorService: 處理 JSON 中的 tickets 陣列，合併重複欄位到 "基本資料" 票據
  */
 @Service
-public class TicketProcessor {
+public class TicketProcessorService {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public JsonNode process(JsonNode root) {
@@ -34,7 +34,7 @@ public class TicketProcessor {
             basicTicket = mapper.createObjectNode();
             basicTicket.put("name", "基本資料");
             basicTicket.set("inputs", mapper.createArrayNode());
-            tickets.insert(0, basicTicket);
+//            tickets.insert(0, basicTicket);
         }
         ArrayNode basicInputs = (ArrayNode) basicTicket.get("inputs");
 
@@ -79,6 +79,10 @@ public class TicketProcessor {
                     }
                 }
             }
+        }
+
+        if (!basicInputs.isEmpty()) {
+            tickets.insert(0, basicTicket);
         }
 
         return root;

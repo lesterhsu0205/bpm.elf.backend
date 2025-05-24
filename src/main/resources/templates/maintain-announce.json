@@ -1,6 +1,9 @@
 {
   "name": "維護公告",
-  "path": "常用模板 > Mail > 維護公告",
+  "path": [
+    "常用模板",
+    "Mail"
+  ],
   "inputs": [
     {
       "$enum": "Radio.ENV"

@@ -2,10 +2,6 @@ package com.line.bank.bxi.bpm.elf.backend.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.line.bank.bxi.bpm.elf.backend.constant.ComponentEnum;
-import com.line.bank.bxi.bpm.elf.backend.constant.EnumRegistry;
 import com.line.bank.bxi.bpm.elf.backend.service.TicketProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +28,7 @@ public class TemplateController {
     @Autowired
     private TicketProcessorService ticketProcessorService;
 
-    @GetMapping("/read-settings-raw")
+    @GetMapping("/settings-raw")
     public ResponseEntity<List<Map<String, Object>>> readAllRawTemplates() {
         List<Map<String, Object>> resultList = new ArrayList<>();
 
@@ -46,7 +42,7 @@ public class TemplateController {
                         try {
                             String fileName = file.getFileName().toString();
 
-                            JsonNode jsonNode = readJson(file);
+                            JsonNode jsonNode = ticketProcessorService.readJson(file);
 
                             Map<String, Object> jsonFile = new HashMap<>();
                             jsonFile.put("file", fileName);
@@ -68,65 +64,38 @@ public class TemplateController {
         }
     }
 
-    @GetMapping("/read-settings")
+    @GetMapping("/settings")
     public ResponseEntity<List<Map<String, Object>>> readAllTemplates() {
-        List<Map<String, Object>> resultList = new ArrayList<>();
-
         try {
-            // 獲取 resources/templates 目錄內的所有 JSON 檔案
-            Path templatesPath = Paths.get(baseDirectory);
 
-            // 遍歷 JSON 檔案
-            Files.walk(templatesPath).filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".json"))  // 只處理 .json 檔案
-                    .forEach(file -> {
-                        try {
-                            String fileName = file.getFileName().toString();
-
-                            JsonNode jsonNode = readJson(file);
-
-                            Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
-                            int initialDepth = 0; // 記錄當前遞迴深度
-
-                            jsonNode = mergeJsonReferences(fileName, jsonNode, processedRefs, initialDepth);
-                            jsonNode = processEnums(jsonNode);
-
-                            Map<String, Object> jsonFile = new HashMap<>();
-                            jsonFile.put("file", fileName);
-                            jsonFile.put("isCompose", "compose".equals(file.getParent().getFileName().toString()));
-                            jsonFile.put("content", jsonNode);  // 儲存為 JSON 結構
-                            resultList.add(jsonFile);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Error reading file: " + file.getFileName(), e);
-                        }
-                    });
-
-            // 排序：isCompose = true 的排在最後
-            resultList.sort(Comparator.comparing(map -> Boolean.TRUE.equals(map.get("isCompose"))));
-
-            return ResponseEntity.ok(resultList);
+            return ResponseEntity.ok(ticketProcessorService.readAllTemplates());
 
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Collections.singletonList(Map.of("error", "Unable to read templates directory: " + baseDirectory)));
         }
     }
 
-    @GetMapping(value = "/read-setting/compose/{filename}", produces = "application/json")
+    @GetMapping(value = "/setting/compose/{filename}", produces = "application/json")
     public ResponseEntity<String> getComposeTemplate(@PathVariable("filename") String filename) {
-        return getTemplate(filename, true);
+        return ticketProcessorService.getTemplate(filename, true);
     }
 
-    @GetMapping(value = "/read-setting/{filename}", produces = "application/json")
+    @GetMapping(value = "/setting/{filename}", produces = "application/json")
     public ResponseEntity<String> getTemplate(@PathVariable("filename") String filename) {
-        return getTemplate(filename, false);
+        return ticketProcessorService.getTemplate(filename, false);
     }
 
+    @GetMapping(value = "/sidebar", produces = "application/json")
+    public ResponseEntity<String> getSideBar() {
+        return ticketProcessorService.getSideBar();
+    }
 
-    @PostMapping("/write-setting/{filename}")
+    @PostMapping("/setting/{filename}")
     public ResponseEntity<Map<String, Object>> writeTemplate(@PathVariable("filename") String filename, @RequestBody String jsonContent) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            validFileExtention(filename);
+            ticketProcessorService.validFileExtention(filename);
 
             // 組合檔案的絕對路徑
             Path filePath = Paths.get(baseDirectory, filename);
@@ -152,12 +121,12 @@ public class TemplateController {
     }
 
 
-    @DeleteMapping(value = "/delete-setting/{filename}", produces = "application/json")
+    @DeleteMapping(value = "/setting/{filename}", produces = "application/json")
     public ResponseEntity<Map<String, Object>> deleteTemplate(@PathVariable("filename") String filename) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            validFileExtention(filename);
+            ticketProcessorService.validFileExtention(filename);
 
             // 正式環境：從指定的目錄刪除
             Path filePath = Paths.get(baseDirectory, filename);
@@ -178,160 +147,6 @@ public class TemplateController {
             }
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error processing file: " + e.getMessage()));
-        }
-    }
-
-
-    private void validFileExtention(String filename) {
-        // 確保檔案名為 JSON，避免不安全的請求
-        if (!filename.endsWith(".json")) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", "Invalid file type, only .json files are allowed.");
-            ResponseEntity.badRequest().body(response);
-        }
-
-        // 確保路徑安全，避免目錄遍歷攻擊
-        if (filename.contains("..")) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", "Invalid file name.");
-            ResponseEntity.badRequest().body(response);
-        }
-    }
-
-    // 讀取 JSON 檔案
-    private JsonNode readJson(Path path) throws IOException {
-        String jsonContent = Files.readString(path);
-        return objectMapper.readTree(jsonContent);
-    }
-
-    private JsonNode processEnums(JsonNode root) {
-        if (root.isObject()) {
-            ObjectNode objectNode = (ObjectNode) root;
-            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
-
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> entry = fields.next();
-                String key = entry.getKey();
-                JsonNode value = entry.getValue();
-
-                if ("$enum".equals(key) && value.isTextual()) {
-                    String enumFullName = value.asText(); // e.g. "Dropdown.DEPARTMENT"
-
-                    try {
-                        String[] parts = enumFullName.split("\\.");
-                        if (parts.length != 2) {
-                            throw new IllegalArgumentException("Invalid $enum format: " + enumFullName);
-                        }
-                        String enumName = parts[1]; // e.g. "DEPARTMENT"
-
-                        // 透過 EnumRegistry 快速查找
-                        ComponentEnum componentEnum = EnumRegistry.getByEnumName(enumName);
-                        if (componentEnum == null) {
-                            return root; // 找不到時不處理，直接回傳原始 JSON
-                        }
-
-                        // 取得 Enum JSON
-                        JsonNode enumJson = objectMapper.valueToTree(componentEnum.toJson());
-                        return enumJson; // 直接替換當前節點
-                    } catch (Exception e) {
-                        // 找不到時，保留原始 JSON
-//                        System.out.println(e);
-                    }
-                } else {
-                    objectNode.set(key, processEnums(value));
-                }
-            }
-        } else if (root.isArray()) {
-            ArrayNode arrayNode = (ArrayNode) root;
-            for (int i = 0; i < arrayNode.size(); i++) {
-                arrayNode.set(i, processEnums(arrayNode.get(i))); // 正確處理 ArrayNode
-            }
-        }
-        return root;
-    }
-
-    // 遞歸合併 JSON 內的 "$include"
-    private JsonNode mergeJsonReferences(String fileName, JsonNode node, Set<String> processedRefs, int depth) {
-
-        if (node.isObject()) {
-            ObjectNode objectNode = (ObjectNode) node;
-
-            // 遞歸處理所有子節點
-            Iterator<String> fieldNames = objectNode.fieldNames();
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
-
-                if ("$include".equalsIgnoreCase(fieldName)) {
-                    String refFileName = objectNode.get("$include").asText();
-
-                    // 避免自己 include 自己
-                    if (refFileName.equalsIgnoreCase(fileName)) {
-                        return objectNode;
-                    }
-
-                    // 避免無窮遞迴：當前這次遞迴內已經解析過該 JSON，則直接返回，不展開
-                    if (processedRefs.contains(refFileName)) {
-                        return objectNode;
-                    }
-
-                    // 限制最多展開兩層，超過兩層的 "ref" 保留原始內容
-                    if (depth >= 1) {
-                        return objectNode;
-                    }
-
-                    // 讀取副 JSON 並合併
-                    try {
-                        JsonNode refJson = readJson(Paths.get(baseDirectory, refFileName));
-
-                        // 標記此 JSON 檔案已經被展開（僅限於這一輪處理）
-                        processedRefs.add(refFileName);
-
-                        // 進一步展開 refJson
-                        return mergeJsonReferences(fileName, refJson, new HashSet<>(processedRefs), depth + 1);
-                    } catch (Exception e) {
-                        objectNode.put(fieldName, e.toString());
-//                        return objectNode;
-                    }
-                } else {
-                    objectNode.set(fieldName, mergeJsonReferences(fileName, objectNode.get(fieldName), new HashSet<>(processedRefs), depth));
-                }
-            }
-            return objectNode;
-        } else if (node.isArray()) {
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            for (JsonNode element : node) {
-                arrayNode.add(mergeJsonReferences(fileName, element, new HashSet<>(processedRefs), depth));
-            }
-            return arrayNode;
-        }
-
-        return node;
-
-    }
-
-    private ResponseEntity<String> getTemplate(String filename, boolean isCompose) {
-        try {
-            validFileExtention(filename);
-
-            String jsonContent;
-
-            // 正式環境：直接從文件系統讀取
-            String filePath = isCompose ? baseDirectory + "/compose/" + filename : baseDirectory + "/" + filename;
-            JsonNode jsonNode = readJson(Paths.get(filePath));
-
-            Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
-            int initialDepth = 0; // 記錄當前遞迴深度
-
-            jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
-            jsonNode = processEnums(jsonNode);
-            jsonNode = ticketProcessorService.process(jsonNode);
-            jsonContent = objectMapper.writeValueAsString(jsonNode);
-
-
-            return ResponseEntity.ok().body(jsonContent);
-
-        } catch (IOException e) {
-            return ResponseEntity.status(404).body("Error reading file: " + filename + ", cause: " + e);
         }
     }
 }

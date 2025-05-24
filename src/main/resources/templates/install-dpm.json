@@ -1,6 +1,11 @@
 {
   "name": "DPM 安裝",
-  "path": "資安處需求 > Security > File Based Log、DB 加密新增/移除申請",
+  "path": [
+    "IT01_資訊需求單",
+    "資安處需求",
+    "Security",
+    "File Based Log、DB 加密新增/移除申請"
+  ],
   "inputs": [
     {
       "type": "text",

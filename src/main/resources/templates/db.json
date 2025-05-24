@@ -1,14 +1,21 @@
 {
-  "name" : "Database",
-  "path" : "資訊基礎服務處需求 > 資料庫需求申請 > 資料庫異動申請單(不含資料調閱及資料修改)",
-  "inputs" : [ {
-    "type" : "textarea",
-    "label" : "描述",
-    "key" : "database_description"
-  }, {
-    "type" : "description",
-    "label" : "需求說明",
-    "key" : "apply_database_description",
-    "template" : "[環境]\n${env}\n${device}\n\n[需求說明]\n${database_description}\n\n[執行單位]\nIF-資料庫管理部"
-  } ]
+  "name": "資料庫異動申請單(不含資料調閱及資料修改)",
+  "path": [
+    "IT01_資訊需求單",
+    "資訊基礎服務處需求",
+    "資料庫需求申請"
+  ],
+  "inputs": [
+    {
+      "type": "textarea",
+      "label": "描述",
+      "key": "database_description"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "apply_database_description",
+      "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${database_description}\n\n[執行單位]\nIF-資料庫管理部"
+    }
+  ]
 }

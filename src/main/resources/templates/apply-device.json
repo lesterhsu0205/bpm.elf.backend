@@ -1,6 +1,10 @@
 {
   "name": "資訊設備申請",
-  "path": "資訊基礎服務處需求 > Helpdesk > 資訊設備申請",
+  "path": [
+    "IT01_資訊需求單",
+    "資訊基礎服務處需求",
+    "Helpdesk"
+  ],
   "inputs": [
     {
       "type": "select",

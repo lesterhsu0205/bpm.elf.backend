@@ -1,6 +1,9 @@
 {
   "name": "非工作日上版",
-  "path": "常用模板 > Mail > 非工作日上版",
+  "path": [
+    "常用模板",
+    "Mail"
+  ],
   "inputs": [
     {
       "type": "text",

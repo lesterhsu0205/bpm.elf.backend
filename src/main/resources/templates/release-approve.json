@@ -1,6 +1,9 @@
 {
   "name": "Release單簽核",
-  "path": "常用模板 > jabber > Release單簽核",
+  "path": [
+    "其它工具",
+    "BXI"
+  ],
   "inputs": [
     {
       "type": "checkbox",

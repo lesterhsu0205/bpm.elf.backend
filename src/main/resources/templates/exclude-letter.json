@@ -1,6 +1,9 @@
 {
   "name": "排外信",
-  "path": "常用模板 > Mail > 排外信",
+  "path": [
+    "常用模板",
+    "Mail"
+  ],
   "inputs": [
     {
       "type": "text",

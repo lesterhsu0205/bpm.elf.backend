@@ -1,6 +1,11 @@
 {
   "name": "Imperva",
-  "path": "資安處需求 > Security > (通用)資安需求申請",
+  "path": [
+    "IT01_資訊需求單",
+    "資安處需求",
+    "Security",
+    "(通用)資安需求申請"
+  ],
   "inputs": [
     {
       "type": "textarea",

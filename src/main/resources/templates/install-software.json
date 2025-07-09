@@ -7,9 +7,24 @@
   ],
   "inputs": [
     {
+      "$enum": "Dropdown.DIVISION"
+    },
+    {
+      "$enum": "Dropdown.DEPARTMENT"
+    },
+    {
+      "$enum": "Text.STAFF_ID"
+    },
+    {
+      "$enum": "Text.ENG_NAME"
+    },
+    {
+      "$enum": "Text.CHI_NAME"
+    },
+    {
       "type": "select",
       "label": "申請安裝設備",
-      "key": "apply_install_device",
+      "key": "apply_install_software_device",
       "options": [
         {
           "text": "筆記型電腦"
@@ -25,7 +40,7 @@
     {
       "type": "textarea",
       "label": "申請原因",
-      "key": "apply_install_reason"
+      "key": "apply_install_software_reason"
     },
     {
       "type": "textarea",
@@ -36,7 +51,7 @@
       "type": "description",
       "label": "需求說明",
       "key": "install_software_description",
-      "template": "申請部門: ${division}/${department}\n申請安裝人員: ${staffId} ${engName} ${chiName}\n申請安裝設備: ${apply_install_device}\n申請原因:\n${apply_install_reason}\n安裝軟體資訊如下:\n*詳細資訊請參考附件\n${softwareList}\n\n[執行單位]\n問管暨IDC作業管理部"
+      "template": "申請部門: ${division}/${department}\n申請安裝人員: ${staffId} ${engName} ${chiName}\n申請安裝設備: ${apply_install_software_device}\n申請原因:\n${apply_install_software_reason}\n安裝軟體資訊如下:\n*詳細資訊請參考附件\n${softwareList}\n\n[執行單位]\n問管暨IDC作業管理部"
     }
   ]
 }

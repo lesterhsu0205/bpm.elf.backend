@@ -71,7 +71,7 @@ public class TicketProcessorService {
                 JsonNode input = inputs.get(j);
                 if (input.has("key")) {
                     String key = input.get("key").asText();
-                    occurrences.computeIfAbsent(key, k -> new LinkedList<>()).add(new TicketInputRef(i, j));
+                    occurrences.computeIfAbsent(key, k -> new ArrayList<>()).add(new TicketInputRef(t.get("name").asText()));
                 }
             }
         }
@@ -80,17 +80,32 @@ public class TicketProcessorService {
         for (Map.Entry<String, List<TicketInputRef>> entry : occurrences.entrySet()) {
             List<TicketInputRef> refs = entry.getValue();
             if (refs.size() > 1) {
-                // 先從後往前刪除，以免索引錯亂
+
+                JsonNode removed = null;
+
                 for (TicketInputRef ref : refs) {
-                    ObjectNode ticketNode = (ObjectNode) tickets.get(ref.getTicketIndex());
-                    ArrayNode inputs = (ArrayNode) ticketNode.get("inputs");
-                    JsonNode removed = inputs.remove(ref.getInputIndex());
-                    // 只有當 key 未添加過時才加入
-                    String key = removed.has("key") ? removed.get("key").asText() : null;
-                    if (key != null && !addedKeys.contains(key)) {
-                        basicInputs.add(removed);
-                        addedKeys.add(key);
+
+                    for (JsonNode ticket : tickets) {
+                        if (ticket.has("name") && ref.getTicketName().equalsIgnoreCase(ticket.get("name").asText())) {
+                            ArrayNode inputs = (ArrayNode) ticket.get("inputs");
+
+                            for (int j = 0; j < inputs.size(); j++) {
+                                JsonNode input = inputs.get(j);
+                                if (input.has("key") && entry.getKey().equalsIgnoreCase(input.get("key").asText())) {
+                                    removed = inputs.remove(j);
+                                }
+                            }
+                            // 不可能有同名 ticket, 處理完第一個就可跳出
+                            break;
+                        }
                     }
+                }
+
+                // 只有當 key 未添加過時才加入
+                String key = removed.has("key") ? removed.get("key").asText() : null;
+                if (key != null && !addedKeys.contains(key)) {
+                    basicInputs.add(removed);
+                    addedKeys.add(key);
                 }
             }
         }
@@ -243,6 +258,7 @@ public class TicketProcessorService {
 
             jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
             jsonNode = processEnums(jsonNode);
+            removeRecursive(null, null, jsonNode, "$enum", "$include");
             jsonNode = process(jsonNode);
             jsonContent = mapper.writeValueAsString(jsonNode);
 
@@ -426,6 +442,57 @@ public class TicketProcessorService {
         // 4. 清空並回填
         arrayNode.removeAll();
         list.forEach(arrayNode::add);
+    }
+
+    private void removeRecursive(ObjectNode parent, String keyInParent, JsonNode node, String... fieldNames) {
+        if (node == null) return;
+
+        if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+
+            // 遞迴處理所有子欄位
+            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+            List<String> keysToRemove = new ArrayList<>();
+
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> entry = fields.next();
+                String fieldName = entry.getKey();
+                JsonNode childNode = entry.getValue();
+
+                // 遞迴處理子節點
+                removeRecursive(objectNode, fieldName, childNode, fieldNames);
+            }
+
+            // 刪除欄位名稱符合的
+            for (String fieldName : fieldNames) {
+                objectNode.remove(fieldName);
+            }
+
+            // 檢查是否為空 → 如果是，就請父層刪除它
+            if (objectNode.size() == 0 && parent != null && keyInParent != null) {
+                parent.remove(keyInParent);
+            }
+
+        } else if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+
+            // 反向遍歷，避免刪除時 index 亂掉
+            for (int i = arrayNode.size() - 1; i >= 0; i--) {
+                JsonNode element = arrayNode.get(i);
+                removeRecursive(null, null, element, fieldNames);
+
+                // 若 element 被處理後變成空物件或空陣列，也刪掉它
+                if ((element.isObject() && element.size() == 0) ||
+                        (element.isArray() && element.size() == 0)) {
+                    arrayNode.remove(i);
+                }
+            }
+
+            // 整個陣列變空，也刪除它
+            if (arrayNode.size() == 0 && parent != null && keyInParent != null) {
+                parent.remove(keyInParent);
+            }
+        }
     }
 
 }

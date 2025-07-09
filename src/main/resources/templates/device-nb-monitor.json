@@ -25,7 +25,7 @@
     {
       "type": "select",
       "label": "申請項目",
-      "key": "apply_device",
+      "key": "apply_nb_monitor_item",
       "options": [
         {
           "text": "螢幕"
@@ -38,8 +38,8 @@
     {
       "type": "description",
       "label": "需求說明",
-      "key": "apply_device_description",
-      "template": "[需求說明]\n${division} ${department} 新進同仁 ${staffId} ${engName} ${chiName} 新人到職申請 ${apply_device}\n\n[執行單位]\n問管暨IDC作業管理部"
+      "key": "apply_nb_monitor_description",
+      "template": "[需求說明]\n${division} ${department} 新進同仁 ${staffId} ${engName} ${chiName} 新人到職申請 ${apply_nb_monitor_item}\n\n[執行單位]\n問管暨IDC作業管理部"
     }
   ]
 }

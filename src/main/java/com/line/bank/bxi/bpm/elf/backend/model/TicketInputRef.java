@@ -1,19 +1,18 @@
 package com.line.bank.bxi.bpm.elf.backend.model;
 
 public class TicketInputRef {
-    private int ticketIndex;
-    private int inputIndex;
 
-    public TicketInputRef(int ticketIndex, int inputIndex) {
-        this.ticketIndex = ticketIndex;
-        this.inputIndex = inputIndex;
+    private String ticketName;
+
+    public TicketInputRef(String ticketName) {
+        this.ticketName = ticketName;
     }
 
-    public int getTicketIndex() {
-        return ticketIndex;
+    public String getTicketName() {
+        return ticketName;
     }
 
-    public int getInputIndex() {
-        return inputIndex;
+    public void setTicketName(String ticketName) {
+        this.ticketName = ticketName;
     }
 }

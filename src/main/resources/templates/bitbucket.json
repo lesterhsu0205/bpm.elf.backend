@@ -7,6 +7,21 @@
   ],
   "inputs": [
     {
+      "$enum": "Dropdown.DIVISION"
+    },
+    {
+      "$enum": "Dropdown.DEPARTMENT"
+    },
+    {
+      "$enum": "Text.STAFF_ID"
+    },
+    {
+      "$enum": "Text.ENG_NAME"
+    },
+    {
+      "$enum": "Text.CHI_NAME"
+    },
+    {
       "$enum": "Radio.ENV"
     },
     {
@@ -28,7 +43,7 @@
     {
       "type": "textarea",
       "label": "申請原因",
-      "key": "bitbucket_apply_reason"
+      "key": "apply_bitbucket_reason"
     },
     {
       "type": "textarea",

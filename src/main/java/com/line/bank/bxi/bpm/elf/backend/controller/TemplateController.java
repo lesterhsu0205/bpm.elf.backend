@@ -28,7 +28,7 @@ public class TemplateController {
     @Autowired
     private TicketProcessorService ticketProcessorService;
 
-    @GetMapping("/settings-raw")
+    @GetMapping(value = "/settings-raw", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> readAllRawTemplates() {
         List<Map<String, Object>> resultList = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class TemplateController {
         }
     }
 
-    @GetMapping("/settings")
+    @GetMapping(value = "/settings", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> readAllTemplates() {
         try {
 
@@ -90,7 +90,7 @@ public class TemplateController {
         return ticketProcessorService.getSideBar();
     }
 
-    @PostMapping("/setting/{filename}")
+    @PostMapping(value = "/setting/{filename}", produces = "application/json")
     public ResponseEntity<Map<String, Object>> writeTemplate(@PathVariable("filename") String filename, @RequestBody String jsonContent) {
         Map<String, Object> response = new HashMap<>();
 
@@ -117,6 +117,23 @@ public class TemplateController {
 
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error writing file: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/prerenderData", produces = "application/json")
+    public ResponseEntity<String> prerenderData(@RequestBody String jsonContent) {
+        String fileName = null;
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonContent);
+
+            fileName = jsonNode.get("newFileName").textValue();
+            JsonNode jsonData = jsonNode.get("jsonData");
+
+            String response = ticketProcessorService.getJsonContent(fileName, jsonData);
+            return ResponseEntity.ok().body(response);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(404).body("Error reading file: " + fileName + ", cause: " + e);
         }
     }
 

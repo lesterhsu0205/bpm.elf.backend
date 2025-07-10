@@ -1,5 +1,6 @@
 package com.line.bank.bxi.bpm.elf.backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -31,7 +32,7 @@ public class TicketProcessorService {
     @Value("${file.base.directory}")
     private String baseDirectory;
 
-    public JsonNode process(JsonNode root) {
+    public JsonNode aggregateTicketsColumn(JsonNode root) {
         if (!root.has("tickets") || !root.get("tickets").isArray()) {
             return root;
         }
@@ -253,14 +254,7 @@ public class TicketProcessorService {
             String filePath = isCompose ? baseDirectory + "/compose/" + filename : baseDirectory + "/" + filename;
             JsonNode jsonNode = readJson(Paths.get(filePath));
 
-            Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
-            int initialDepth = 0; // 記錄當前遞迴深度
-
-            jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
-            jsonNode = processEnums(jsonNode);
-            removeRecursive(null, null, jsonNode, "$enum", "$include");
-            jsonNode = process(jsonNode);
-            jsonContent = mapper.writeValueAsString(jsonNode);
+            jsonContent = getJsonContent(filename, jsonNode);
 
             return ResponseEntity.ok().body(jsonContent);
 
@@ -349,6 +343,19 @@ public class TicketProcessorService {
         // 排序：isCompose = true 的排在最後
         resultList.sort(Comparator.comparing(map -> Boolean.TRUE.equals(map.get("isCompose"))));
         return resultList;
+    }
+
+    public String getJsonContent(String filename, JsonNode jsonNode) throws JsonProcessingException {
+        String jsonContent;
+        Set<String> processedRefs = new HashSet<>();  // 追蹤當前請求內的 JSON 檔案
+        int initialDepth = 0; // 記錄當前遞迴深度
+
+        jsonNode = mergeJsonReferences(filename, jsonNode, processedRefs, initialDepth);
+        jsonNode = processEnums(jsonNode);
+        removeRecursive(null, null, jsonNode, "$enum", "$include");
+        jsonNode = aggregateTicketsColumn(jsonNode);
+        jsonContent = mapper.writeValueAsString(jsonNode);
+        return jsonContent;
     }
 
     private void assignItemNode(JsonNode parenNode, String[] existPaths, Map<String, Object> setting) {
@@ -494,5 +501,4 @@ public class TicketProcessorService {
             }
         }
     }
-
 }

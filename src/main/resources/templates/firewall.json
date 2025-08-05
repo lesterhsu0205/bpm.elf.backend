@@ -7,10 +7,18 @@
   ],
   "inputs": [
     {
+      "$enum": "Radio.ENV"
+    },
+    {
+      "type": "textarea",
+      "label": "用途說明",
+      "key": "firewall_reason"
+    },
+    {
       "type": "description",
       "label": "需求說明",
-      "key": "apply_db_description",
-      "template": "[環境]\n${env}\n${device}\n\n[需求說明]\n${reason}\n故需開通防火牆，請依附件執行\n\n[執行單位]\nIF-網路架構管理部"
+      "key": "firewall_description",
+      "template": "[環境]\n${env}\n\n[需求說明]\n${firewall_reason}\n\n[執行單位]\nIF-網路架構管理部"
     }
   ]
 }

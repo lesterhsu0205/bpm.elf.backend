@@ -1,0 +1,44 @@
+{
+  "name": "Server Read Only 權限申請",
+  "path": [
+    "IT01_資訊需求單",
+    "帳號管理",
+    "帳號權限申請/異動"
+  ],
+  "inputs": [
+    {
+      "$enum": "Dropdown.DIVISION"
+    },
+    {
+      "$enum": "Dropdown.DEPARTMENT"
+    },
+    {
+      "$enum": "Radio.ENV"
+    },
+    {
+      "$enum": "Text.STAFF_ID"
+    },
+    {
+      "$enum": "Text.ENG_NAME"
+    },
+    {
+      "$enum": "Text.CHI_NAME"
+    },
+    {
+      "type": "textarea",
+      "label": "Server 清單",
+      "key": "server_read_only_authority_server_list"
+    },
+    {
+      "type": "textarea",
+      "label": "人員清單",
+      "key": "server_read_only_authority_member_list"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "server_read_only_authority_description",
+      "template": "[需求說明]\n申請人: ${engName}/${chiName}\n申請人部門: ${division} ${department}\n1.請詳細說明欲申請之 Read only account 環境: ${env}\n2.以及想申請的 server 清單:\n(基本上是根據你的部門別來限制，但還是請列出, EX: Core team 只能 Access Core 相關 server)\n${server_read_only_authority_server_list}\n3.以及想申請的人名清單:\n${server_read_only_authority_member_list}\n4.${env} 環境：申請後六個月Review一次(6/12)\n\n[執行單位]\n平台架構管理部"
+    }
+  ]
+}

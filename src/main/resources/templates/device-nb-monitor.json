@@ -36,10 +36,15 @@
       ]
     },
     {
+      "type": "textarea",
+      "label": "申請原因",
+      "key": "apply_nb_monitor_reason"
+    },
+    {
       "type": "description",
       "label": "需求說明",
       "key": "apply_nb_monitor_description",
-      "template": "[需求說明]\n${division} ${department} 新進同仁 ${staffId} ${engName} ${chiName} 新人到職申請 ${apply_nb_monitor_item}\n\n[執行單位]\n問管暨IDC作業管理部"
+      "template": "[需求說明]\n${division} ${department} 新進同仁 ${staffId} ${engName} ${chiName} 因 ${apply_nb_monitor_reason} 申請 ${apply_nb_monitor_item} 設備\n\n[執行單位]\n問管暨IDC作業管理部"
     }
   ]
 }

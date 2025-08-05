@@ -1,0 +1,62 @@
+{
+  "name": "VPN 異動申請",
+  "path": [
+    "IT01_資訊需求單",
+    "資訊基礎服務處需求",
+    "網路管理需求申請"
+  ],
+  "inputs": [
+    {
+      "$enum": "Radio.ENV"
+    },
+    {
+      "type": "radio",
+      "label": "需求類型",
+      "key": "vpn_modify_require_type",
+      "options": [
+        {
+          "text": "新增"
+        },
+        {
+          "text": "修改"
+        },
+        {
+          "text": "刪除"
+        }
+      ]
+    },
+    {
+      "type": "radio",
+      "label": "對應的跳板機權限",
+      "key": "jump_device_authority",
+      "options": [
+        {
+          "text": "需開啟"
+        },
+        {
+          "text": "不需開啟"
+        }
+      ]
+    },
+    {
+      "$enum": "Text.STAFF_ID"
+    },
+    {
+      "$enum": "Text.ENG_NAME"
+    },
+    {
+      "$enum": "Text.CHI_NAME"
+    },
+    {
+      "type": "textarea",
+      "label": "申請原因",
+      "key": "vpn_modify_reason"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "vpn_modify_description",
+      "template": "[需求說明]\n需求類型: ${vpn_modify_require_type}\n環境: ${env}\n對應環境跳板機權限: ${jump_device_authority}\n申請人員編: ${staffId}\n申請人姓名: ${engName}/${chiName}\n申請原因: ${vpn_modify_reason}\n\n備註:\n請依據IF-4010 VPN辦法要求，依據WFH control framework 對應存取的環境確認控管等級後，依據安全控管措施單的範本來填寫(僅需改描述欄位即可)，如有不能適用的控制項，請說明理由，以利後續審核。\n\n[執行單位]\n資安技術部/網路架構管理部/帳號管理中心"
+    }
+  ]
+}

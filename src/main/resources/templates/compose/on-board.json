@@ -2,13 +2,19 @@
   "name": "新人報到",
   "tickets": [
     {
-      "$include": "device-nb-monitor.json"
-    },
-    {
-      "$include": "install-software.json"
+      "$include": "device-for-freshman.json"
     },
     {
       "$include": "bitbucket.json"
+    },
+    {
+      "$include": "jenkins.json"
+    },
+    {
+      "$include": "vpn-modify.json"
+    },
+    {
+      "$include": "server-read-only-authority.json"
     }
   ]
 }

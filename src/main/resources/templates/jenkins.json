@@ -1,5 +1,5 @@
 {
-  "name": "Bitbucket",
+  "name": "Jenkins",
   "path": [
     "IT01_資訊需求單",
     "帳號管理",
@@ -21,12 +21,12 @@
     {
       "type": "text",
       "label": "申請的系統名稱",
-      "key": "bitbucket_system_name"
+      "key": "jenkins_system_name"
     },
     {
       "type": "radio",
       "label": "需求類型",
-      "key": "bitbucket_require_type",
+      "key": "jenkins_require_type",
       "options": [
         {
           "text": "新增"
@@ -42,18 +42,18 @@
     {
       "type": "textarea",
       "label": "申請的系統權限或角色",
-      "key": "bitbucket_authority_role"
+      "key": "jenkins_authority_role"
     },
     {
       "type": "textarea",
       "label": "申請原因",
-      "key": "bitbucket_reason"
+      "key": "jenkins_reason"
     },
     {
       "type": "description",
       "label": "需求說明",
-      "key": "bitbucket_description",
-      "template": "[需求說明]\n申請的系統名稱: ${bitbucket_system_name}\n環境: ${env}\n需求類型: ${bitbucket_require_type}\n申請人員編: ${staffId}\n申請人姓名: ${engName}/${chiName}\n申請的系統權限或角色: ${bitbucket_authority_role} (請務必先和系統IT人員確認權限或角色，並確實填寫)\n申請原因: ${bitbucket_reason}\n\n[執行單位]\n帳號管理中心/平台架構管理部"
+      "key": "jenkins_description",
+      "template": "[需求說明]\n申請的系統名稱: ${jenkins_system_name}\n環境: ${env}\n需求類型: ${jenkins_require_type}\n申請人員編: ${staffId}\n申請人姓名: ${engName}/${chiName}\n申請的系統權限或角色: ${jenkins_authority_role} (請務必先和系統IT人員確認權限或角色，並確實填寫)\n申請原因: ${jenkins_reason}\n\n[執行單位]\n帳號管理中心/平台架構管理部"
     }
   ]
 }

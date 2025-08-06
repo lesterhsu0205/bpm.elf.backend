@@ -27,7 +27,7 @@
 @REM   MVNW_VERBOSE - true: enable verbose log; others: silence the output
 @REM ----------------------------------------------------------------------------
 
-set JAVA_HOME=D:\zulu17.56.15-ca-jdk17.0.14-win_x64
+set JAVA_HOME=D:\zulu21.38.21-ca-jdk21.0.5-win_x64
 
 @IF "%__MVNW_ARG0_NAME__%"=="" (SET __MVNW_ARG0_NAME__=%~nx0)
 @SET __MVNW_CMD__=

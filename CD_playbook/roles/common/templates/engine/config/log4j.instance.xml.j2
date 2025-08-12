@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" >
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%F:%L][%t][%X{guid}] %m%n"/>
+        </Console>
+
+        <RollingFile name="rollingFile" fileName="${sys:logPath}/${sys:container}.log" filePattern="${sys:logPath}/${sys:container}.log.%d{yyyyMMdd}-%i" >
+            <PatternLayout pattern="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%X{guid}] %F:%L(%t) -%m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="1 GB" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+
+        <RollingFile name="integrationRollingFile" fileName="${sys:logPath}/integrationLogMng_${sys:container}.log" filePattern="${sys:logPath}/integrationLogMng_${sys:container}.log.%d{yyyyMMdd}" >
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="java.sql" level="info" additivity="false"/>
+        <Logger name="org.mybatis" level="info" additivity="false"/>
+        <Logger name="org.springframework" level="info" additivity="false"/>
+        <Logger name="org.apache" level="info" additivity="false"/>
+        <Logger name="org.apache.kafka" level="info" additivity="false"/>
+
+        <Logger name="bxi.extension.customizing.logging" level="{{ bxi_log_level }}" additivity="false">
+            <AppenderRef ref="integrationRollingFile"/>
+        </Logger>
+
+        <Root level="{{ bxi_log_level }}">
+            <AppenderRef ref="rollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
+

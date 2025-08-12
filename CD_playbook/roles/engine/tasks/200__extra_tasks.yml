@@ -1,0 +1,21 @@
+---
+
+- name: Tasks after instllation
+  tags:
+  - extra-tasks
+  block:
+    - name: Register service
+      include_role:
+        name: common
+        tasks_from: "020__register_services.yml"
+    
+    - name: Add crontabs
+      include_role:
+        name: common
+        tasks_from: "021__add_crontabs.yml"
+        
+    - name: Edit hosts
+      include_role:
+        name: common
+        tasks_from: "023__add_hosts.yml"
+

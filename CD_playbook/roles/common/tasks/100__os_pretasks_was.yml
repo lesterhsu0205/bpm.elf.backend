@@ -1,0 +1,14 @@
+---
+
+- tags:
+  - os-pretasks
+  block:
+    - name: Create group and user
+      include_tasks: "base/account.yml"
+      vars:
+        user_list: 
+          - "{{ wasadmin }}"
+          - "{{ keystore }}"
+        user_group: "{{ account_group }}"
+        
+  become: yes

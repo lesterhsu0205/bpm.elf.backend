@@ -1,0 +1,56 @@
+---
+
+- tags:
+  - register-service
+  block:
+    - name: Copy hazelcast service file (mca-app0[1,2])
+      template:
+        src: "service/hazelcast.service.j2"
+        dest: "/usr/lib/systemd/system/line.app.{{ gv_env_name }}{{ system_code }}_hazelcast.service"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      when: "hazelcast_installation[host_name]|default(false)|bool == true"
+    
+    - name: Copy zookeeper service file (mca-app0[1-3])
+      template:
+        src: "service/zookeeper.service.j2"
+        dest: "/usr/lib/systemd/system/line.app.{{ gv_env_name }}{{ system_code }}_zookeeper.service"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      when: "kafka_installation[host_name]|default(false)|bool == true"
+    
+    - name: Copy kafka service file (mca-app0[1-3])
+      template:
+        src: "service/kafka.service.j2"
+        dest: "/usr/lib/systemd/system/line.app.{{ gv_env_name }}{{ system_code }}_kafka.service"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      when: "kafka_installation[host_name]|default(false)|bool == true"
+    
+    - name: Copy bxi service file
+      template:
+        src: "service/bxi.service.j2"
+        dest: "/usr/lib/systemd/system/line.app.{{ gv_env_name }}{{ system_code }}_bxi.service"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      when: "engine_installation[host_name]|default(false)|bool == true"  
+    
+    - name: Copy bxi_sui service file
+      template:
+        src: "service/bxi_sui.service.j2"
+        dest: "/usr/lib/systemd/system/line.app.{{ gv_env_name }}{{ system_code }}_bxi_sui.service"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      when: "mca_sui_installation[host_name]|default(false)|bool == true"
+    
+    - name: Daemon_reload all services
+      systemd:
+        daemon_reload : yes
+      when: (hazelcast_installation[host_name]|default(false)|bool == true) or (kafka_installation[host_name]|default(false)|bool == true) or (engine_installation[host_name]|default(false)|bool == true) or (mca_sui_installation[host_name]|default(false)|bool == true)
+    
+  become: yes

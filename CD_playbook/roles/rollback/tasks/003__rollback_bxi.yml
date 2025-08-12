@@ -1,0 +1,32 @@
+- tags:
+  - rollback
+  block:
+    - name: Rollback engine 
+      include_role:
+        name: common
+        tasks_from: "base/rollback.yml"
+      vars:
+        rollback_src: "{{ mca_ap_dir }}/engine"
+        rollback_dst: "{{ mca_rollback_dir }}/engine/mca_engine_rollback_{{ timestamp }}"
+        rollback_user: "{{ mcaadmin }}"
+        rollback_exclude_folders: 
+        - "{{ mca_ap_dir }}/engine/hazelcast"
+        - "{{ mca_ap_dir }}/engine/kafka"
+        backup_path: "{{ mca_backup_dir }}/engine"
+        version_dir: "{{ mca_ap_dir }}"
+        
+    - name: Rollback vercntl 
+      include_role:
+        name: common
+        tasks_from: "base/rollback.yml"
+      vars:
+        rollback_src: "{{ mca_ap_dir }}/vercntl"
+        rollback_dst: "{{ mca_rollback_dir }}/vercntl/mca_vercntl_rollback_{{ timestamp }}"
+        rollback_user: "{{ mcaadmin }}"
+        rollback_exclude_folders: 
+        - "{{ mca_ap_dir }}/vercntl/upload"
+        backup_path: "{{ mca_backup_dir }}/vercntl"
+        version_dir: "{{ mca_ap_dir }}"    
+        
+  become: yes
+  become_user: mcaadmin  

@@ -1,0 +1,16 @@
+---
+
+- tags:
+  - pretasks
+  block:
+    - name: Copy mcaadmin's .bash_profile file
+      include_tasks: "base/replace_bash_profile.yml"
+      vars:
+        user_list: "{{ mcaadmin }}"
+    
+    - name: Copy mcaadmin's nproc.conf file
+      include_tasks: "base/replace_config_nproc.yml"
+      vars:
+        user_list: "{{ mcaadmin }}"
+    
+  become: yes

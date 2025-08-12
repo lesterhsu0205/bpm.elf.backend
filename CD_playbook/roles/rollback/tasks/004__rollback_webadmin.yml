@@ -1,0 +1,17 @@
+- tags:
+  - rollback
+  block:
+    - name: Rollback engine 
+      include_role:
+        name: common
+        tasks_from: "base/rollback.yml"
+      vars:
+        rollback_src: "{{ mca_was_dir }}"
+        rollback_dst: "{{ mca_rollback_dir }}/webadmin/mca_webadmin_rollback_{{ timestamp }}"
+        rollback_user: "{{ wasadmin }}"
+        rollback_exclude_folders: ""
+        backup_path: "{{ mca_backup_dir }}/webadmin"
+        version_dir: "{{ mca_was_dir }}"
+        
+  become: yes
+  become_user: wasadmin  

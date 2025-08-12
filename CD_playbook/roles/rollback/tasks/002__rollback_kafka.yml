@@ -1,0 +1,18 @@
+- tags:
+  - rollback
+  block:
+    - name: Rollback engine 
+      include_role:
+        name: common
+        tasks_from: "base/rollback.yml"
+      vars:
+        rollback_src: "{{ mca_ap_dir }}/engine/kafka"
+        rollback_dst: "{{ mca_rollback_dir }}/kafka/mca_kafka_rollback_{{ timestamp }}"
+        rollback_user: "{{ mcaadmin }}"
+        rollback_exclude_folders: 
+        - "{{ mca_ap_dir }}/engine/kafka/zookeeper/version-2"
+        backup_path: "{{ mca_backup_dir }}/kafka"
+        version_dir: "{{ mca_ap_dir }}"
+        
+  become: yes
+  become_user: mcaadmin  

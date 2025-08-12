@@ -1,0 +1,19 @@
+#/!bin/sh
+
+umask 022
+
+if [ $# -lt 1 ]; then
+    echo "InterfaceId is required"
+    exit 0
+fi
+
+cd {{ mca_ap_dir }}/vercntl
+
+BXI_HOME={{ mca_ap_dir }}
+FILE_PATH=$BXI_HOME/vercntl/download
+VERCNTL_PROPERTIES=$BXI_HOME/vercntl/config/config.prop
+ADMIN_DB_PROPERTIES=$BXI_HOME/vercntl/config/bxi-config-mca.properties
+CLASS_PATH=$BXI_HOME/vercntl/lib/*:$BXI_HOME/engine/libs/*:/usr/lib/jvm/java-1.8.0-openjdk/jre/lib/*
+
+java -Dlog4j.configuration=file:config/log4j.xml -Dbxi.home=$BXI_HOME/engine/config -cp $CLASS_PATH confman.Executor EXPORT $1 $FILE_PATH $VERCNTL_PROPERTIES $ADMIN_DB_PROPERTIES
+

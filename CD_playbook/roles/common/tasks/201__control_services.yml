@@ -1,0 +1,25 @@
+---
+
+- tags:
+  - control-service
+  block:
+    - name: Control filebeat services
+      systemd:
+        name: "filebeat.service"
+        state: "{{ action }}"
+      when: 
+        - action == "reloaded" or action == "restarted" or action == "started" or action == "stopped"
+        - filebeat_installation[host_name]|default(false)|bool == true
+    
+    - name: Enable filebeat services
+      systemd:
+        name: "filebeat.service"
+        enabled: yes
+        masked: no 
+      when: 
+        - action == "enabled"
+        - filebeat_installation[host_name]|default(false)|bool == true
+  when:
+    - env != "dev"
+    
+  become: yes 

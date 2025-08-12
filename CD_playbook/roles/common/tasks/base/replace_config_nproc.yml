@@ -1,0 +1,16 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# user_list: list of user info
+
+- name: Copy user's nproc.conf file
+  template:
+    src: "templates/os/{{ item.user }}/nproc.conf.j2"
+    dest: "/etc/security/limits.d/{{ item.user_id }}-{{ item.user }}-nproc.conf"
+    mode: 0644
+  with_items: 
+    - "{{ user_list }}"
+               
+  become: yes
+ 

@@ -1,0 +1,9 @@
+- tags:
+  - undo
+  block:
+    - name: Remove filebeat 
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ gv_etc_filebeat }}/inputs.d"
+        user: "root"

@@ -1,0 +1,23 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# src_folder: source path
+# compare_file: target backup file .tar.gz
+
+- name: "compare files in in two directories"
+  block:
+    - name: Check if file exists 
+      stat:
+        path: "{{ compare_file }}"
+      register: compare_file_status
+  
+    - name: "Compare all files in {{ src_folder }} and {{ compare_file }}"
+      shell: tar --compare --file={{ compare_file }} -C {{ src_folder }} | awk '!/Mode/ && !/Uid/ && !/Gid/ && !/time/'
+      register: diffParts
+      ignore_errors: yes
+      when: compare_file_status.stat.exists
+      
+    - debug:
+        msg: "{{ diffParts.stderr_lines }}"
+      when: diffParts.stderr_lines is defined

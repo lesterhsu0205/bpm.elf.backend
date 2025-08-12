@@ -1,0 +1,20 @@
+---
+- name: Undo Hazelcast
+  include_tasks: 001__undo_hazelcast.yml
+  tags: always
+
+- name: Undo Kafka
+  include_tasks: 002__undo_kafka.yml
+  tags: always
+
+- name: Undo Engine
+  include_tasks: 003__undo_bxi.yml
+  tags: always
+
+- name: Undo Webadmin
+  include_tasks: 004__undo_webadmin.yml
+  tags: always
+
+- name: Undo Filebeat
+  include_tasks: 003__undo_filebeat.yml
+  tags: always

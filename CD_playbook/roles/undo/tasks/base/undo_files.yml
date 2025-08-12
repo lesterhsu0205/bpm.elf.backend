@@ -1,0 +1,27 @@
+#################################################################
+# Parameters
+#################################################################
+# target_path: Delete file(s) in target_path, but no delete folder
+# user: excute user like 'mcaadmin', 'wasadmin',...etc.
+---
+- name: Delete file(s) in {{ target_path }}
+  block:
+    - name: Check does folder empty before proceeding
+      shell: "ls {{ target_path }} | wc -l"
+      register: filesFound
+    
+    - name: Reserve files for debug
+      shell: "ls -d {{ target_path }}/*"
+      register: folder_list
+      when: filesFound.stdout | int > 0
+    
+    - name: "Delete file(s)"
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ folder_list.stdout_lines }}"
+      when: folder_list.stdout_lines is defined
+      
+  become: yes
+  become_user: "{{ user }}"

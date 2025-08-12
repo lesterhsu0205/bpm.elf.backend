@@ -1,0 +1,18 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# user_list: user list
+
+- name: Copy user's .bash_profile file
+  template:
+    src: "templates/os/{{ item.user }}/.bash_profile.j2"
+    dest: "{{ item.user_home }}/.bash_profile"
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: 0644
+  with_items: 
+    - "{{ user_list }}"
+               
+  become: yes
+ 

@@ -1,0 +1,18 @@
+---
+
+- tags:
+  - deploy
+  block:
+    - name: Deploy {{ gd_image_path }} to {{ gd_image_dest_path }}
+      include_role:
+        name: common
+        tasks_from: "base/download_deploy.yml"
+      vars:
+        gd_image_url: "{{ gv_repo_url }}/com/line/bank/{{ mca_ap_artifactid }}/{{ mca_ap_version }}/{{ mca_ap_artifactid }}-{{ mca_ap_version }}-engine.zip"
+        gd_image_path: "{{ mca_ap_dir }}/{{ mca_ap_artifactid }}-{{ mca_ap_version }}-engine.zip"
+        gd_image_dest_path: "{{ gv_sw_dir }}"
+        user: "{{ mcaadmin }}"
+        
+  become: yes
+  become_user: "{{ cd_account }}"
+    

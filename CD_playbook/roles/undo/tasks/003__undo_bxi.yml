@@ -1,0 +1,32 @@
+- tags:
+  - undo
+  block:
+    - name: Remove engine service
+      include_tasks: "base/undo_services.yml"
+      vars:
+        target: "line.app.{{ gv_env_name }}{{ system_code }}_bxi.service"
+
+    - name: Remove engine crontabs
+      include_tasks: "base/undo_crontabs.yml"
+      vars:
+        crontab_items: "{{ service_crontab['mcaadmin']['engine'] }}"
+
+    - name: Remove engine, backups, logs 
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ mca_ap_dir }}/engine"
+          - "{{ mca_ap_dir }}/vercntl"
+          - "{{ mca_logs_dir }}/engine"
+          - "{{ mca_logs_dir }}/vercntl"
+          - "{{ mca_backup_dir }}/engine"
+          - "{{ mca_backup_dir }}/vercntl"
+          - "{{ mca_rollback_dir }}/engine"
+          - "{{ mca_rollback_dir }}/vercntl"
+        user: "mcaadmin"
+
+    - name: Remove files
+      include_tasks: "base/undo_files.yml"
+      vars:
+        target_path: "{{ mca_ap_dir }}"
+        user: "mcaadmin"

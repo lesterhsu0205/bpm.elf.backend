@@ -1,0 +1,11 @@
+---
+- hosts: "{{ host_name }}"
+  become: yes
+  vars_files:
+    - "vars/global/all.yml"
+    - "vars/sys_common/bpm-elf.yml"
+    - "vars/env/{{ site }}{{ env }}/{{ site }}{{ env }}-bpm-elf-stack.yml"
+  roles:
+    - name: Undo any deployment on lab, ex. tvdev-ans-lab01, tvdev-cid-lab01
+      role: "undo"
+      when: "ansible_hostname.split('-')[2][0:3] == 'lab'"

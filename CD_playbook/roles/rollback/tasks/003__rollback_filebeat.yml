@@ -1,0 +1,16 @@
+- tags:
+  - rollback
+  block:
+    - name: Rollback filebeat 
+      include_role:
+        name: common
+        tasks_from: "base/rollback.yml"
+      vars:
+        rollback_src: "{{ gv_etc_filebeat }}/inputs.d"
+        rollback_dst: "{{ mca_rollback_dir }}/filebeat/inputs.d/mca_filebeat_rollback_{{ timestamp }}"
+        rollback_user: "{{ mcaadmin }}"
+        backup_path: "{{ mca_backup_dir }}/filebeat"
+        version_dir: "{{ mca_ap_dir }}" 
+        
+  become: yes
+  become_user: mcaadmin  

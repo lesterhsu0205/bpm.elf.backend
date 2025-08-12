@@ -1,0 +1,33 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# gd_image_url: Url to download golden image
+# gd_image_path: Path to save golden image
+# gd_image_dest_path: Target path to unarchive 
+# user : system account
+
+- name: Download, extract and deploy
+  block:
+    - name: Download golden image from repository
+      get_url:
+        url: "{{ gd_image_url }}"
+        dest: "{{ gd_image_path }}"
+        headers: 
+          "X-JFrog-Art-Api": "{{ vault_jfrog_api_token }}"
+        
+    - name: Extract golden image   
+      unarchive:
+        src: "{{ gd_image_path }}"
+        dest: "{{ gd_image_dest_path }}"
+        remote_src: true
+    
+    - name: Remove golden image
+      file:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ gd_image_path }}"
+
+  become: yes        
+  become_user: "{{user.user}}"

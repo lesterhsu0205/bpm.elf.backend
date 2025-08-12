@@ -1,0 +1,22 @@
+- tags:
+  - undo
+  block:
+    - name: Remove hazelcast service
+      include_tasks: "base/undo_services.yml"
+      vars:
+        target: "line.app.{{ gv_env_name }}{{ system_code }}_hazelcast.service"
+
+    - name: Remove hazelcast crontabs
+      include_tasks: "base/undo_crontabs.yml"
+      vars:
+        crontab_items: "{{ service_crontab['mcaadmin']['hazelcast'] }}"
+
+    - name: Remove hazelcast, backups, logs 
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items: 
+          - "{{ mca_ap_dir }}/engine/hazelcast"
+          - "{{ mca_logs_dir }}/hazelcast"
+          - "{{ mca_backup_dir }}/hazelcast"
+          - "{{ mca_rollback_dir }}/hazelcast"
+        user: "mcaadmin"

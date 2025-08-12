@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" >
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%F:%L][%t][%X{guid}] %m%n"/>
+        </Console>
+
+        <RollingFile name="rollingFile" fileName="${sys:logPath}/${sys:node}.log" filePattern="${sys:logPath}/${sys:node}.log.%d{yyyyMMdd}-%i" >
+            <PatternLayout pattern="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%X{guid}] %F:%L(%t) -%m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="1 GB" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+         </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="java.sql" level="info" additivity="false"/>
+        <Logger name="org.mybatis" level="info" additivity="false"/>
+        <Logger name="org.springframework" level="info" additivity="false"/>
+        <Logger name="org.apache" level="info" additivity="false"/>
+
+        <Root level="{{ bxi_log_level }}">
+            <AppenderRef ref="rollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
+

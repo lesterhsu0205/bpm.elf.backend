@@ -1,0 +1,12 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# hc_url: url of hc page, ex. https://tvprd-mca-app01:18443/MCA/html/hc.html
+# expected_code: expected httpcode, ex. 200 or 404
+
+- name: Verify {{ hc_url }} and expect httpcode {{ expected_code }}
+  uri:
+    url: "{{ hc_url }}"
+    status_code: [ "{{ expected_code }}" ]
+  tags: always

@@ -1,0 +1,24 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/sbin
+
+# Package specific environment
+export JAVA_HOME={{ gv_java_home }}
+export PATH=$JAVA_HOME/bin:$PATH
+export BXIHOME={{ mca_ap_dir }}/engine
+
+# User specific environment
+alias ll='ls -all'
+alias la='ll -all'
+alias l='ll'
+alias sb='source ~/.bashrc'
+alias vb='vi ~/.bashrc'
+alias ..='cd ..'
+alias h='history'

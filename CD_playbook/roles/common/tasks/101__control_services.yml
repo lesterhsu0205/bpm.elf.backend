@@ -1,0 +1,23 @@
+---
+
+- tags:
+  - control-service
+  block:
+    - name: Control webadmin services
+      systemd:
+        name: "line.was.{{ jboss.server_name }}.service"
+        state: "{{ action }}"
+      when: 
+        - action == "reloaded" or action == "restarted" or action == "started" or action == "stopped"
+        - webadmin_installation[host_name]|default(false)|bool == true
+    
+    - name: Enable webadmin services
+      systemd:
+        name: "line.was.{{ jboss.server_name }}.service"
+        enabled: yes
+        masked: no 
+      when: 
+        - action == "enabled"
+        - webadmin_installation[host_name]|default(false)|bool == true
+    
+  become: yes 

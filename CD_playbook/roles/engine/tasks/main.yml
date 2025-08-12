@@ -1,0 +1,25 @@
+---
+
+- name: Tasks before installation
+  include_tasks: 000__pretasks.yml
+  tags: always
+
+- name: Backup engine
+  include_tasks: 100__backup_engine.yml
+  tags: always
+
+- name: Deploy engine
+  include_tasks: 101__deploy_engine.yml
+  tags: always
+  
+- name: Config engine
+  include_tasks: 102__config_engine.yml
+  tags: always
+  
+- name: Tasks after installation
+  include_tasks: 200__extra_tasks.yml
+  tags: always
+
+- name: Compare engine
+  include_tasks: 300__compare_engine.yml
+  tags: always

@@ -1,0 +1,53 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# mca_ap_dir: ap path
+# mcaadmin: mcaadmin info
+
+- name: Replace vercntl config
+  block:
+    - name: Replace config of /vercntl/config/bxi-config-mca.properties ( 1/5 )
+      template:
+        src: "vercntl/config/bxi-config-mca.properties.j2"
+        dest: "{{ mca_ap_dir }}/vercntl/config/bxi-config-mca.properties"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+      vars:
+        source: "vip"
+  
+    - name: Generate {{ mca_ap_dir }}/vercntl/config/config.prop ( 2/5 )
+      template:
+        src: vercntl/config/config.prop.j2
+        dest: "{{ mca_ap_dir }}/vercntl/config/config.prop"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+    - name: Generate {{ mca_ap_dir }}/vercntl/config/log4j.xml ( 3/5 )
+      template:
+        src: vercntl/config/log4j.xml.j2
+        dest: "{{ mca_ap_dir }}/vercntl/config/log4j.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+  
+    - name: Replace config of /vercntl/vercntl_export.sh ( 4/5 )
+      template:
+        src: "vercntl/vercntl_export.sh.j2"
+        dest: "{{ mca_ap_dir }}/vercntl/vercntl_export.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+    
+    - name: Replace config of /vercntl/vercntl_import.sh ( 5/5 )
+      template:
+        src: "vercntl/vercntl_import.sh.j2"
+        dest: "{{ mca_ap_dir }}/vercntl/vercntl_import.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+
+  become: yes
+  become_user: mcaadmin         

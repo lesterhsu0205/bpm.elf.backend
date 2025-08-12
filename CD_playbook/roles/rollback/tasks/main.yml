@@ -1,0 +1,25 @@
+---
+- name: Rollback Hazelcast
+  include_tasks: 001__rollback_hazelcast.yml
+  tags: always
+  when: "hazelcast_installation[host_name]|default(false)|bool == true"
+
+- name: Rollback Kafka
+  include_tasks: 002__rollback_kafka.yml
+  tags: always
+  when: "kafka_installation[host_name]|default(false)|bool == true"
+
+- name: Rollback Engine
+  include_tasks: 003__rollback_bxi.yml
+  tags: always
+  when: (engine_installation[host_name]|default(false)|bool == true) or (mca_sui_installation[host_name]|default(false)|bool == true)
+
+- name: Rollback Webadmin
+  include_tasks: 004__rollback_webadmin.yml
+  tags: always
+  when: "webadmin_installation[host_name]|default(false)|bool == true"
+
+- name: Rollback Filebeat
+  include_tasks: 003__rollback_filebeat.yml
+  tags: always
+  when: "filebeat_installation[host_name]|default(false)|bool == true"

@@ -1,0 +1,132 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# gv_etc_filebeat: filebeat path
+# mca_logs_dir: logs path of mca
+#################################################################
+# Due to filebeat run as root, permission MUST be root
+#################################################################
+
+- name: Replace engine config
+  block:
+    - name: Generate {{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/instance_error.js ( 1/2 )
+      template:
+        src: filebeat/etc/filebeat/inputs.d/scripts/{{ system_code }}/instance_error.js.j2
+        dest: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/instance_error.js"
+        owner: "root"
+        group: "root"
+        mode: 0644
+
+    - name: Generate {{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/kafka_error.js ( 1/2 )
+      template:
+        src: filebeat/etc/filebeat/inputs.d/scripts/{{ system_code }}/kafka_error.js.j2
+        dest: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/kafka_error.js"
+        owner: "root"
+        group: "root"
+        mode: 0644
+
+    - name: Generate {{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/hazelcast_error.js ( 1/2 )
+      template:
+        src: filebeat/etc/filebeat/inputs.d/scripts/{{ system_code }}/hazelcast_error.js.j2
+        dest: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/hazelcast_error.js"
+        owner: "root"
+        group: "root"
+        mode: 0644
+        
+    - name: Generate {{ gv_etc_filebeat }}/inputs.d/{{ system_code }}.yml ( 2/2 )
+      template:
+        src: filebeat/etc/filebeat/inputs.d/{{ system_code }}.yml.j2
+        dest: "{{ gv_etc_filebeat }}/inputs.d/{{ system_code }}.yml"
+        owner: "root"
+        group: "root"
+        mode: 0644
+      vars:
+        fields:
+          meta:
+            division: "{{ 'it010' if env == 'stg' else 'bs010' }}"
+            dept: "{{ 'it012' if env == 'stg' else 'bs011' }}"
+            system_code: "{{ system_code }}"
+          permission:
+            dba: false
+            dlp: false
+            beat: false
+        configurations:
+          - paths:
+              - "{{ mca_logs_dir }}*/engine/integrationLogMng*.log"
+              # - /logs/jboss/{{ env }}{{ system_code }}admin01_*/server.log
+              # - /logs/jboss/{{ env }}{{ system_code }}admin01_*/nohup/{{ env }}{{ system_code }}admin01_*.out
+            multiline:
+              pattern: '^[0-9]'
+              negate: true
+              match: after
+
+          - paths:
+              - "{{ mca_logs_dir }}*/engine/imageLog_*.log"
+              - "{{ mca_logs_dir }}*/engine/kafka/zookeeper.out"
+              - "{{ mca_logs_dir }}*/engine/stctsLog_*.log"
+              - "{{ mca_logs_dir }}*/engine/errorLog_*.log"
+              - "{{ mca_logs_dir }}*/engine/txLog_*.log"
+            multiline:
+              pattern: '^\['
+              negate: true
+              match: after
+
+          - paths:
+              - "{{ mca_logs_dir }}*/engine/kafka/server.log"
+              - "{{ mca_logs_dir }}*/engine/kafka/kafkaServer.out"
+            multiline:
+              pattern: '^\['
+              negate: true
+              match: after
+            processors:
+              - dissect:
+                  tokenizer: "[%{log.time}] %{log.level} %{dissect.message}"
+                  target_prefix: ""
+                  overwrite_keys: true
+                  trim_values: "all"
+                  ignore_failure: true
+              - script:
+                  lang: javascript
+                  tag: filter_error_code
+                  file: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/kafka_error.js"
+
+          - paths:
+              - "{{ mca_logs_dir }}*/hazelcast/hazelcast.log"
+            multiline:
+              pattern: '^\[ INFO\]|\[DEBUG\]|\[TRACE\]|\[ WARN\]|\[FATAL\]|\[ERROR\]'
+              negate: true
+              match: after
+            processors:
+              - dissect:
+                  tokenizer: "[%{log.level}]%{dissect.message}"
+                  target_prefix: ""
+                  overwrite_keys: true
+                  trim_values: "all"
+                  ignore_failure: true
+              - script:
+                  lang: javascript
+                  tag: hazelcast_error
+                  file: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/hazelcast_error.js"
+
+          - paths:
+              # - "{{ mca_logs_dir }}*/admin/webadmin.log"
+              - "{{ mca_logs_dir }}*/engine/MCA_*.log"
+            multiline:
+              pattern: '^\[ INFO\]|\[DEBUG\]|\[TRACE\]|\[ WARN\]|\[FATAL\]|\[ERROR\]'
+              negate: true
+              match: after
+            processors:
+              - dissect:
+                  tokenizer: "[%{log.level}]%{dissect.message}"
+                  target_prefix: ""
+                  overwrite_keys: true
+                  trim_values: "all"
+                  ignore_failure: true
+              - script:
+                  lang: javascript
+                  tag: instance_error
+                  file: "{{ gv_etc_filebeat }}/inputs.d/scripts/{{ system_code }}/instance_error.js"
+              
+  become: yes
+  become_user: root

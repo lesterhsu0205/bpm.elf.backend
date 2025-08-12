@@ -1,0 +1,16 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# directory_list: list of directory path
+# user: user account to create directory
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ user.user }}"
+    group: "{{ user.group }}"
+    mode: 0755
+  with_items: 
+    - "{{ directory_list }}"

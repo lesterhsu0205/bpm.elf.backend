@@ -1,0 +1,130 @@
+---
+# Due to stop/start flow is diff, so use list to control it.
+# To start, stop, restart, reload, set action = started, stopped, restarted, reloaded
+# To enable service, set action = enabled
+# To do daemon_reload, set action = daemon_reload
+
+- tags:
+  - control-service
+  block:
+    - name: Initialize an empty list for service
+      set_fact:
+        service_list: []
+        
+    # Stop flow    
+    - name: Append bxi_service to stop
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_bxi.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "stopped"
+        - engine_installation[host_name]|default(false)|bool == true
+    
+    - name: Append bxi_sui to stop
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_bxi_sui.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "stopped"
+        - mca_sui_installation[host_name]|default(false)|bool == true
+  
+    - name: Append kafka to stop
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_kafka.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "stopped"
+        - kafka_installation[host_name]|default(false)|bool == true
+    
+    - name: Append zookeeper to stop
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_zookeeper.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "stopped"
+        - kafka_installation[host_name]|default(false)|bool == true
+  
+    - name: Append hazelcast to stop
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_hazelcast.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "stopped"
+        - hazelcast_installation[host_name]|default(false)|bool == true
+    
+    # Start flow
+    - name: Append hazelcast to start, restart, reload and enable
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_hazelcast.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "started" or action == "reloaded" or action == "restarted" or action == "enabled"
+        - hazelcast_installation[host_name]|default(false)|bool == true
+    
+    - name: Append zookeeper to start, restart, reload and enable
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_zookeeper.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "started" or action == "reloaded" or action == "restarted" or action == "enabled"
+        - kafka_installation[host_name]|default(false)|bool == true
+    
+    - name: Append kafka to start, restart, reload and enable
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_kafka.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "started" or action == "reloaded" or action == "restarted" or action == "enabled"
+        - kafka_installation[host_name]|default(false)|bool == true
+    
+    - name: Append bxi_service to start, restart, reload and enable
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_bxi.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "started" or action == "reloaded" or action == "restarted" or action == "enabled"
+        - engine_installation[host_name]|default(false)|bool == true
+  
+    - name: Append bxi_sui to start, restart, reload and enable
+      vars:
+        service: "line.app.{{ gv_env_name }}{{ system_code }}_bxi_sui.service"
+      set_fact:
+        service_list: "{{ service_list + [ service ] }}"
+      when: 
+        - action == "started" or action == "reloaded" or action == "restarted" or action == "enabled"
+        - mca_sui_installation[host_name]|default(false)|bool == true
+    
+    # Different acitons
+    - name: Control services
+      systemd:
+        name: "{{ item }}"
+        state: "{{ action }}"  
+      with_items:
+        - "{{ service_list }}"
+      when: action == "reloaded" or action == "restarted" or action == "started" or action == "stopped"
+    
+    - name: Enable services
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        masked: no 
+      with_items:
+        - "{{ service_list }}"
+      when: action == "enabled"
+    
+    - name: Daemon_reload all services
+      systemd:
+        daemon_reload : yes
+      when: action == "daemon_reload"  
+    
+  become: yes    
+  

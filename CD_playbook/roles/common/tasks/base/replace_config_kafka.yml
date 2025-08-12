@@ -1,0 +1,86 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# mca_ap_dir: ap path
+# mcaadmin: mcaadmin info
+
+- name: Replace kafka config
+  block:
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/kafka_start.sh ( 1/8 )
+      template:
+        src: engine/kafka/bin/kafka_start.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/kafka_start.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+        
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/kafka_topic_create.sh ( 2/8 )
+      template:
+        src: "engine/kafka/bin/kafka_topic_create.sh.j2"
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/kafka_topic_create.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+        
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/kafka-run-class.sh ( 3/8 )
+      template:
+        src: engine/kafka/bin/kafka-run-class.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/kafka-run-class.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+    
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/kafka-server-start.sh ( 4/8 )
+      template:
+        src: engine/kafka/bin/kafka-server-start.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/kafka-server-start.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+    
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/zookeeper_start.sh ( 5/8 )
+      template:
+        src: engine/kafka/bin/zookeeper_start.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/zookeeper_start.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+    
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/bin/zookeeper-server-start.sh ( 6/8 )
+      template:
+        src: engine/kafka/bin/zookeeper-server-start.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/bin/zookeeper-server-start.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+     
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/config/server.properties ( 7/8 )
+      template:
+        src: engine/kafka/config/server.properties.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/config/server.properties"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+    - name: Generate {{ mca_ap_dir }}/engine/kafka/config/zookeeper.properties ( 8/8 )
+      template:
+        src: engine/kafka/config/zookeeper.properties.j2
+        dest: "{{ mca_ap_dir }}/engine/kafka/config/zookeeper.properties"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+    
+    - name: Create myid file
+      shell: "echo '{{ host_name[-1:] }}' > {{ mca_ap_dir }}/engine/kafka/zookeeper/myid"   
+  
+    - name: Chown myid file
+      file:
+        path: "{{ mca_ap_dir }}/engine/kafka/zookeeper/myid"
+        state: file
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+  become: yes
+  become_user: mcaadmin         

@@ -1,0 +1,29 @@
+#################################################################
+# Parameters
+#################################################################
+# target: service path, ex. line.app.{{ gv_env_name }}{{ system_code }}_hazelcast.service
+---
+- name: Undo services - {{ target }}
+  block:
+    - name: Check if Service Exists
+      stat: path=/usr/lib/systemd/system/{{ target }}
+      register: service_status
+
+    - name: Stop service - {{ target }}
+      shell: "systemctl stop {{ target }}"
+      when: service_status.stat.exists
+
+    - name: Disabled service - {{ target }}
+      shell: "systemctl disable {{ target }}"
+      when: service_status.stat.exists
+
+    - name: Remove services
+      file:
+        state: absent
+        path: "/usr/lib/systemd/system/{{ target }}"
+      when: service_status.stat.exists
+
+    - name: Reset failed
+      shell: "systemctl reset-failed"
+      when: service_status.stat.exists
+  become: yes

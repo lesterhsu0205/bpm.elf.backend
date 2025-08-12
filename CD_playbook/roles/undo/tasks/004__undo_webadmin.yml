@@ -1,0 +1,52 @@
+- tags:
+  - undo
+  block:
+    - name: Remove webadmin service
+      include_tasks: "base/undo_services.yml"
+      vars:
+        target: "line.was.{{ jboss.server_name }}.service"
+
+    - name: Remove webadmin crontabs
+      include_tasks: "base/undo_crontabs.yml"
+      vars:
+        crontab_items: "{{ service_crontab['wasadmin'] }}"
+
+    - name: Remove webadmin, domain
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ jboss_dir }}/domains/{{ jboss.server_name }}"
+          - "{{ jboss_logs_dir }}/{{ jboss.server_name }}"
+        user: "wasadmin"
+
+    - name: Remove logs 
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ mca_logs_dir }}/admin"
+        user: "mcaadmin"
+    
+    # 因為上下層 owner 不同，所以要先砍檔案 再砍資料夾
+    - name: Initialize target_paths
+      set_fact:
+        target_paths:
+          - "{{ mca_was_dir }}"
+          - "{{ mca_backup_dir }}/webadmin"
+          - "{{ mca_rollback_dir }}/webadmin"          
+
+    - name: Remove files
+      include_tasks: "base/undo_files.yml"
+      vars:
+        target_path: "{{ path }}"
+        user: "wasadmin"
+      with_items: "{{ target_paths }}"
+      loop_control:
+        loop_var: path
+
+    - name: Remove folder
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ mca_backup_dir }}/webadmin"
+          - "{{ mca_rollback_dir }}/webadmin"
+        user: "mcaadmin"

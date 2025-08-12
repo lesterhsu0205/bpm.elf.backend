@@ -1,0 +1,55 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# rollback_src: source path
+# rollback_dst: destination path
+# rollback_user: user account to rollback
+# rollback_exclude_folders: List of absolute path to exclude (Optional)
+# backup_path: Backup file pattern, ex. /opt/backup/mca/engine/*.tar.gz
+# version_dir: version file path
+
+- name: "rollback to last backup and keep files for debug"
+  block:
+    - name: Create rollback directories
+      include_tasks: "base/create_directories.yml"
+      vars:
+        user: "{{ rollback_user }}"
+        directory_list: 
+          - "{{ rollback_dst }}"
+    
+    - name: Check does folder empty before proceeding
+      shell: "ls {{ rollback_src }} | wc -l"
+      register: filesFound
+    
+    - name: Reserve files for debug
+      shell: "ls -d {{ rollback_src }}/*"
+      register: folder_list
+      when: filesFound.stdout | int > 0
+    
+    - name: "Reserve files not in list - {{ rollback_exclude_folders }}"
+      shell: "mv {{ item }} {{ rollback_dst }}"
+      when: 
+        - folder_list.stdout_lines is defined
+        - rollback_exclude_folders is defined
+        - item not in rollback_exclude_folders
+      loop: "{{ folder_list.stdout_lines }}"
+      
+    - name: Find latest backup files
+      shell: "find {{ backup_path }}/*.tar.gz | sort -n | tail -1"
+      register: latest_backup_file
+
+    - name: Extract backup
+      unarchive:
+        src: "{{ latest_backup_file.stdout }}"
+        dest: "{{ rollback_src }}"
+        remote_src: true
+      when: latest_backup_file.stdout != ""
+      
+    - name: Rollback version file
+      include_tasks: "base/replace_config_version.yml"
+      vars:
+        version_path: "{{ version_dir }}"
+        golden_image_version: "rollback to {{ latest_backup_file.stdout }}"
+        user: "{{ rollback_user }}" 
+      when: latest_backup_file.stdout != ""

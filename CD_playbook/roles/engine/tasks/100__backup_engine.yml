@@ -1,0 +1,33 @@
+---
+
+- tags:
+  - backup
+  block:
+    - name: Backup {{ backup_src }} to {{ backup_dest }}/{{ backup_name }}
+      include_role:
+        name: common
+        tasks_from: "base/backup.yml"
+      vars:
+        backup_src: "{{ mca_ap_dir }}/engine"
+        backup_dest: "{{ mca_backup_dir }}/engine"
+        backup_name: "mca_engine_{{ mca_ap_backup_version }}"
+        backup_exclude_path:
+        - "{{ mca_ap_dir }}/engine/hazelcast"
+        - "{{ mca_ap_dir }}/engine/kafka"
+    
+    - name: Backup {{ backup_src }} to {{ backup_dest }}/{{ backup_name }}
+      include_role:
+        name: common
+        tasks_from: "base/backup.yml"
+      vars:
+        backup_src: "{{ mca_ap_dir }}/vercntl"
+        backup_dest: "{{ mca_backup_dir }}/vercntl"
+        backup_name: "mca_vercntl_{{ mca_ap_backup_version }}"
+        backup_exclude_path:
+          - "{{ mca_ap_dir }}/vercntl/download"
+          - "{{ mca_ap_dir }}/vercntl/logs"
+          - "{{ mca_ap_dir }}/vercntl/upload"
+    
+  become: yes
+  become_user: mcaadmin  
+    

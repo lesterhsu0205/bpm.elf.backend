@@ -1,0 +1,132 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# jboss_dir : jboss path
+# jboss.server_name : jboss domain name, ex. devmcaadmin01_18443
+# wasadmin : wasadmin info
+
+- name: Copy jboss config
+  block:
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/add-user.sh ( 1/11 )
+      copy:
+        src: jboss/bin/add-user.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/add-user.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755   
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/dump_heap.sh ( 2/11 )
+      copy:
+        src: jboss/bin/dump_heap.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/dump_heap.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/dump_thread.sh ( 3/11 )
+      copy:
+        src: jboss/bin/dump_thread.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/dump_thread.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/enc_passwd.sh ( 4/11 )
+      copy:
+        src: jboss/bin/enc_passwd.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/enc_passwd.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+        
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/jboss-cli.sh ( 5/11 )
+      copy:
+        src: jboss/bin/jboss-cli.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/jboss-cli.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755     
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/kill.sh ( 6/11 )
+      copy:
+        src: jboss/bin/kill.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/kill.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/nohup.sh ( 7/11 )
+      copy:
+        src: jboss/bin/nohup.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/nohup.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/r.sh ( 8/11 )
+      copy:
+        src: jboss/bin/r.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/r.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/s.sh ( 9/11 )
+      copy:
+        src: jboss/bin/s.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/s.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/status.sh ( 10/11 )
+      copy:
+        src: jboss/bin/status.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/status.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/tail.sh ( 11/11 )
+      copy:
+        src: jboss/bin/tail.sh
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/bin/tail.sh"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0755 
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/application-roles.properties ( 1/4 )
+      copy:
+        src: jboss/configuration/application-roles.properties
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/application-roles.properties"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0644
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/application-users.properties ( 2/4 )
+      copy:
+        src: jboss/configuration/application-users.properties
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/application-users.properties"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0644
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/mgmt-groups.properties ( 3/4 )
+      copy:
+        src: jboss/configuration/mgmt-groups.properties
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/mgmt-groups.properties"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0644
+    
+    - name: Copy to {{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/mgmt-users.properties ( 4/4 )
+      copy:
+        src: jboss/configuration/mgmt-users.properties
+        dest: "{{ jboss_dir }}/domains/{{ jboss.server_name }}/configuration/mgmt-users.properties"
+        owner: "{{ wasadmin.user }}"
+        group: "{{ wasadmin.group }}"
+        mode: 0644
+    
+  become: yes
+  become_user: wasadmin 

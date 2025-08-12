@@ -1,0 +1,18 @@
+---
+
+- tags:
+  - config
+  block:
+    - name: Replace config of engine
+      include_role:
+        name: common
+        tasks_from: "base/replace_config_engine.yml"
+    
+    - name: Replace config of vercntl
+      include_role:
+        name: common
+        tasks_from: "base/replace_config_vercntl.yml"
+    
+  become: yes
+  become_user: mcaadmin  
+    

@@ -1,0 +1,95 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# mca_ap_dir: ap path
+# mcaadmin: mcaadmin info
+
+- name: Replace engine config
+  block:
+    - name: Generate {{ mca_ap_dir }}/engine/bin/container.sh ( 1/7 )
+      template:
+        src: engine/bin/container.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/bin/container.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+        
+    - name: Generate {{ mca_ap_dir }}/engine/config/ApplicationContext.xml ( 2/7 )
+      template:
+        src: engine/config/ApplicationContext.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/config/ApplicationContext.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+      vars:
+        source: "vip"
+
+    - name: Generate {{ mca_ap_dir }}/engine/config/bxi.properties ( 3/7 )
+      template:
+        src: engine/config/bxi.properties.j2
+        dest: "{{ mca_ap_dir }}/engine/config/bxi.properties"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+    - name: Generate {{ mca_ap_dir }}/engine/config/log4j.instance.xml ( 4/7 )
+      template:
+        src: engine/config/log4j.instance.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/config/log4j.instance.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+    - name: Generate {{ mca_ap_dir }}/engine/config/log4j.node.xml ( 5/7 )
+      template:
+        src: engine/config/log4j.node.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/config/log4j.node.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+    
+    - name: Generate {{ mca_ap_dir }}/engine/tool/bin/logupload.sh ( 6/7 )
+      template:
+        src: engine/tool/bin/logupload.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/tool/bin/logupload.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755
+        
+    - name: Generate {{ mca_ap_dir }}/engine/tool/config/ToolApplicationContext.xml ( 7/7 )
+      template:
+        src: engine/tool/config/ToolApplicationContext.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/tool/config/ToolApplicationContext.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+      vars:
+        source: "vip"
+
+- name: Replace multi-db applicationContext config
+  block:
+    - name: Generate {{ mca_ap_dir }}/engine/config/ApplicationContext.db01.xml 
+      template:
+        src: engine/config/ApplicationContext.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/config/ApplicationContext.db01.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+      vars:
+        source: "db01"
+      when: datasource.db01 is defined
+    
+    - name: Generate {{ mca_ap_dir }}/engine/config/ApplicationContext.db02.xml
+      template:
+        src: engine/config/ApplicationContext.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/config/ApplicationContext.db02.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+      vars:
+        source: "db02"
+      when: datasource.db02 is defined  
+        
+  become: yes
+  become_user: mcaadmin         

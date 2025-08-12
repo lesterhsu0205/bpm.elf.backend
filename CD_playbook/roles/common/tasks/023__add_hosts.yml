@@ -1,0 +1,14 @@
+---
+
+- tags:
+  - edit-hosts
+  block:
+    - name: Change /etc/hosts file
+      template:
+        src: "os/hosts.j2"
+        dest: "/etc/hosts"
+        owner: root
+        group: root
+        mode: 0644
+        
+  become: yes

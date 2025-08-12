@@ -1,0 +1,21 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# instance : instance name
+# target_api: instance url
+# verify_data: data for verify
+
+- name: Verify {{ instance }} with {{ target_api }} and expect 200 with LBSA000001 response
+  uri:
+    url: "{{ target_api }}"
+    method: POST
+    headers:
+      Content-Type: application/json
+    body_format: json
+    body: "{{ verify_data }}"
+    status_code: 200
+  register: verify_response
+  retries: 3
+  delay: 10
+  until:  verify_response.json.message.msgId == 'LBSA000001'

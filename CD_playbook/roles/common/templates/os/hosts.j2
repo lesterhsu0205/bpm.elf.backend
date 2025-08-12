@@ -1,0 +1,62 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+#::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+{% if host_name.startswith('tvprd-mca-app') %}
+10.244.22.13   lb-tvprd-cbk-18443     lb-tvprd-cbk-18443.lbtw.linebanktw.com
+10.244.22.24   lb-tvprd-cbk-18643     lb-tvprd-cbk-18643.lbtw.linebanktw.com
+10.244.116.183 tvprd-sui-was01        tvprd-sui-was01.lbtw.linebanktw.com
+10.244.116.67  tvprd-sui-was02        tvprd-sui-was02.lbtw.linebanktw.com
+10.244.22.14   lb-tvprd-css-18543     lb-tvprd-css-18543.lbtw.linebanktw.com
+10.244.22.36   lb-tvprd-dec-18443     lb-tvprd-dec-18443.lbtw.linebanktw.com
+10.244.22.52   lb-tvprd-ins-app-18443 lb-tvprd-ins-app-18443.lbtw.linebanktw.com
+10.244.116.104 tvprd-mca-app01        tvprd-mca-app01.lbtw.linebanktw.com
+10.244.116.180 tvprd-mca-app02        tvprd-mca-app02.lbtw.linebanktw.com
+10.244.117.124 tvprd-mca-app03        tvprd-mca-app03.lbtw.linebanktw.com
+10.244.117.125 tvprd-mca-app04        tvprd-mca-app04.lbtw.linebanktw.com
+10.244.118.175 tvprd-mca-app05        tvprd-mca-app05.lbtw.linebanktw.com
+10.244.118.176 tvprd-mca-app06        tvprd-mca-app06.lbtw.linebanktw.com
+
+# NBU Server ## 20220117 Matt ###
+192.168.13.51   tpprd-bak-app01.lbanktw.linebanktw.com  tpprd-bak-app01
+192.168.13.52   tpprd-bak-app02.lbanktw.linebanktw.com  tpprd-bak-app02
+192.168.13.53   tpprd-bak-app03.lbanktw.linebanktw.com  tpprd-bak-app03
+192.168.13.55   tpprd-bak-app05.lbanktw.linebanktw.com  tpprd-bak-app05
+
+{% elif host_name.startswith('lvprd-mca-app') %}
+10.244.150.13  lb-lvprd-cbk-18443     lb-lvprd-cbk-18443.lbtw.linebanktw.com
+10.244.150.24  lb-lvprd-cbk-18643     lb-lvprd-cbk-18643.lbtw.linebanktw.com
+10.244.125.198 lvprd-sui-was01        lvprd-sui-was01.lbtw.linebanktw.com
+10.244.124.116 lvprd-sui-was02        lvprd-sui-was02.lbtw.linebanktw.com
+10.244.150.14  lb-lvprd-css-18543     lb-lvprd-css-18543.lbtw.linebanktw.com
+10.244.150.36  lb-lvprd-dec-18443     lb-lvprd-dec-18443.lbtw.linebanktw.com
+10.244.124.123 lvprd-mca-app01        lvprd-mca-app01.lbtw.linebanktw.com
+10.244.125.222 lvprd-mca-app02        lvprd-mca-app02.lbtw.linebanktw.com
+10.244.125.165 lvprd-mca-app03        lvprd-mca-app03.lbtw.linebanktw.com
+10.244.125.89  lvprd-mca-app04        lvprd-mca-app04.lbtw.linebanktw.com
+
+{% elif host_name.startswith('tvuat-mca-app') %}
+10.244.28.13   lb-tvuat-cbk-18443     lb-tvuat-cbk-18443.lbtwsys.com
+10.244.28.24   lb-tvuat-cbk-18643     lb-tvuat-cbk-18643.lbtwsys.com
+10.244.96.79   tvuat-sui-was01        tvuat-sui-was01.lbtwsys.com
+10.244.96.80   tvuat-sui-was02        tvuat-sui-was02.lbtwsys.com
+10.244.28.14   lb-tvuat-css-18543     lb-tvuat-css-18543.lbtwsys.com
+10.244.28.36   lb-tvuat-dec-18443     lb-tvuat-dec-18443.lbtwsys.com
+10.244.28.48   lb-tvuat-ins-app-18443 lb-tvuat-ins-app-18443.lbtwsys.com
+10.244.28.52   lb-tvuat-eln-was-18443 lb-tvuat-eln-was-18443.lbtwsys.com
+10.244.96.101  tvuat-mca-app01        tvuat-mca-app01.lbtwsys.com
+10.244.96.102  tvuat-mca-app02        tvuat-mca-app02.lbtwsys.com
+10.244.96.103  tvuat-mca-app03        tvuat-mca-app03.lbtwsys.com
+10.244.96.104  tvuat-mca-app04        tvuat-mca-app04.lbtwsys.com
+
+{% elif host_name.startswith('tvstg-mca-app') %}
+10.244.29.13 lb-tvstg-cbk-18443 lb-tvstg-cbk-18443.lbtwsys.com
+10.244.29.24 lb-tvstg-cbk-18643 lb-tvstg-cbk-18643.lbtwsys.com
+10.244.104.171 tvstg-sui-was01 tvstg-sui-was01.lbtwsys.com
+10.244.104.158 tvstg-sui-was02 tvstg-sui-was02.lbtwsys.com
+10.244.29.14 lb-tvstg-css-18543 lb-tvstg-css-18543.lbtwsys.com
+10.244.105.222 tvstg-ins-app01 tvstg-ins-app01.lbtwsys.com
+10.244.104.45 tvstg-dec-web01 tvstg-dec-web01.lbtwsys.com
+10.244.105.172 tvstg-eln-was01 tvstg-eln-was01.lbtwsys.com
+10.244.104.128 tvstg-mca-app01 tvstg-mca-app01.lbtwsys.com
+10.244.104.54 tvstg-mca-app02 tvstg-mca-app02.lbtwsys.com
+{% endif %}

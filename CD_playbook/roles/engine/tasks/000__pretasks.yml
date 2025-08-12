@@ -1,0 +1,34 @@
+---
+
+- name: Tasks before instllation
+  tags:
+  - pretasks
+  block:
+    - name: OS pretasks to create group and user
+      include_role:
+        name: common
+        tasks_from: "000__os_pretasks_ap.yml"
+    
+    - name: AP pretasks to copy .bash_profile file
+      include_role:
+        name: common
+        tasks_from: "010__pretasks_ap.yml"
+
+    - name: AP pretasks to create mca base directories
+      include_role:
+        name: common
+        tasks_from: "base/create_directories.yml"
+      vars:
+        user: "{{ mcaadmin }}"
+        directory_list: 
+          - "{{ mca_ap_dir }}/vercntl/download"
+          - "{{ mca_ap_dir }}/vercntl/logs"
+          - "{{ mca_ap_dir }}/vercntl/upload"
+          - "{{ mca_logs_dir }}/engine"
+          - "{{ mca_logs_dir }}/vercntl/logs"
+          - "{{ mca_backup_dir }}/engine"
+          - "{{ mca_backup_dir }}/vercntl"
+          - "{{ mca_rollback_dir }}/engine"
+          - "{{ mca_rollback_dir }}/vercntl"
+         
+  become: yes

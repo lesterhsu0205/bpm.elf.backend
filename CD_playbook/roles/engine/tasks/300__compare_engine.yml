@@ -1,0 +1,24 @@
+---
+
+- tags:
+  - compare
+  block:
+    - name: Compare between backup and deployed engine
+      include_role:
+        name: common
+        tasks_from: "base/compare.yml"
+      vars:
+        src_folder: "{{ mca_ap_dir }}/engine"
+        compare_file: "{{ mca_backup_dir }}/engine/mca_engine_{{ mca_ap_backup_version }}.tar.gz"
+    
+    - name: Compare between backup and deployed vercntl
+      include_role:
+        name: common
+        tasks_from: "base/compare.yml"
+      vars:
+        src_folder: "{{ mca_ap_dir }}/vercntl"
+        compare_file: "{{ mca_backup_dir }}/vercntl/mca_vercntl_{{ mca_ap_backup_version }}.tar.gz"
+    
+  become: yes
+  become_user: mcaadmin 
+  

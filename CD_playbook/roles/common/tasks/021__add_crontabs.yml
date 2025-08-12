@@ -1,0 +1,34 @@
+---
+
+- tags:
+  - cron
+  block:
+  - name: Add hazelcast crontab
+    cron:
+      name: "{{ item.name }}"
+      minute: "{{ item.minute }}"
+      hour: "{{ item.hour }}"
+      job: "{{ item.job }}"
+      user: "{{ item.user }}"
+    with_items: "{{ service_crontab['mcaadmin']['hazelcast'] }}"
+    when: "hazelcast_installation[host_name]|default(false)|bool == true"
+    
+  - name: Add zookeeper, kafka crontab
+    cron:
+      name: "{{ item.name }}"
+      minute: "{{ item.minute }}"
+      hour: "{{ item.hour }}"
+      job: "{{ item.job }}"
+      user: "{{ item.user }}"
+    with_items: "{{ service_crontab['mcaadmin']['kafka'] }}"
+    when: "kafka_installation[host_name]|default(false)|bool == true"
+    
+  - name: Add engine crontab
+    cron:
+      name: "{{ item.name }}"
+      minute: "{{ item.minute }}"
+      hour: "{{ item.hour }}"
+      job: "{{ item.job }}"
+      user: "{{ item.user }}"
+    with_items: "{{ service_crontab['mcaadmin']['engine'] }}"
+    when: (engine_installation[host_name]|default(false)|bool == true) or (mca_sui_installation[host_name]|default(false)|bool == true)

@@ -1,0 +1,16 @@
+---
+
+- tags:
+  - pretasks
+  block:
+    - name: Create was base directories
+      include_tasks: "base/create_directories.yml"
+      vars:
+        user: "{{ wasadmin }}"
+        directory_list: 
+          - "{{ mca_was_dir }}"
+          - "{{ mca_logs_dir }}/admin"
+          - "{{ mca_backup_dir }}/webadmin"
+          - "{{ mca_rollback_dir }}/webadmin"
+    
+  become: yes

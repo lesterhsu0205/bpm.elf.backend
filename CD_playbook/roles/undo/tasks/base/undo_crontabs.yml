@@ -1,0 +1,14 @@
+#################################################################
+# Parameters
+#################################################################
+# crontab_items: crontab items, ref. vars/sys_common/bpm-elf.yml
+---
+- name: Undo service crontab
+  block:
+  - name: Remove service crontab
+    cron:
+      name: "{{ item.name }}"
+      state: absent
+      user: "{{ item.user }}"
+    with_items: "{{ crontab_items }}"
+  

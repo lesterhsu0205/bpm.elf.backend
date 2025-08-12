@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+        xmlns:camel="http://camel.apache.org/schema/spring"
+        xmlns:hz="http://www.hazelcast.com/schema/spring"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                                http://www.springframework.org/schema/context
+                                http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                                http://www.springframework.org/schema/tx
+                                http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                                http://www.springframework.org/schema/jdbc
+                                http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+                                http://mybatis.org/schema/mybatis-spring
+                                http://mybatis.org/schema/mybatis-spring.xsd
+                                http://camel.apache.org/schema/spring
+                                http://camel.apache.org/schema/spring/camel-spring.xsd
+                                http://www.hazelcast.com/schema/spring
+                                http://www.hazelcast.com/schema/spring/hazelcast-spring.xsd"
+                                default-lazy-init="true">
+
+    <!-- Activates annotation-based bean configuration -->
+    <context:annotation-config/>
+    <context:component-scan base-package="bxi"/>
+    <mybatis:scan base-package="bxi.common.dao" factory-ref="sqlSessionFactory" />
+
+    <!-- ========================================== -->
+    <!-- Database Vendor Environment                -->
+    <!-- ========================================== -->
+    <bean id="vendorProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="Oracle">oracle</prop>
+                <prop key="MySQL">mysql</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="databaseIdProvider" class="bxi.common.context.VendorDatabaseIdProvider">
+        <property name="properties" ref="vendorProperties" />
+    </bean>
+
+<!--
+    <import resource="classpath*:ExtensionContext.xml"/>
+-->
+
+    <!-- ========================================== -->
+    <!-- Oracle Environment                         -->
+    <!-- ========================================== -->
+    <!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">-->
+    <bean id="dataSource" class="bxi.common.context.SecureBasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="{{ datasource[source].url }}"/>
+        <property name="username" value="{{ datasource[source].username }}"/>
+        <property name="password" value="{{ datasource[source].password }}"/>
+        <property name="validationQuery" value="SELECT 1 FROM DUAL" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="1800000" />
+        <property name="initialSize" value="20"/>
+        <property name="maxActive" value="100"/>
+        <property name="maxIdle" value="20"/>
+        <property name="minIdle" value="20"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="databaseIdProvider" ref="databaseIdProvider"/>
+        <!-- property name="mapperLocations" value="classpath:/query.xml"/-->
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+
+    <!-- ========================================== -->
+    <!-- Define Redis                               -->
+    <!-- ========================================== -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig"
+          p:maxTotal="100" p:maxIdle="50" p:minIdle="10" />
+
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:host-name="182.162.100.121" p:port="40090" p:use-pool="true" p:pool-config-ref="jedisPoolConfig" />
+
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <!-- redis template definition -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connection-factory-ref="jedisConnectionFactory"
+          p:keySerializer-ref="stringRedisSerializer"
+          p:hashKeySerializer-ref="stringRedisSerializer"/>
+
+    <bean id="redisCacheService" class="bxi.common.cache.RedisCacheService" >
+        <property name="redisTemplate" ref="redisTemplate" />
+    </bean>
+
+    <!-- ========================================== -->
+    <!-- Define Netty                               -->
+    <!-- ========================================== -->
+    <!--<bean id="bossGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+                 <constructor-arg value="1"/>
+    </bean>
+    <bean id="workerGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>
+    <bean id="epollBossGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="epollWorkerGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>-->
+    <bean id="tcpBossGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="tcpWorkerGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>
+    <bean id="tcpEpollBossGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="tcpEpollWorkerGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>
+
+    <bean id="httpBossGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="httpWorkerGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>
+    <bean id="httpEpollBossGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="1"/>
+    </bean>
+    <bean id="httpEpollWorkerGroup" class="io.netty.channel.epoll.EpollEventLoopGroup">
+        <constructor-arg value="32"/>
+    </bean>
+    <bean id="httpClientWorkerGroup" class="io.netty.channel.nio.NioEventLoopGroup">
+        <constructor-arg value="64"/>
+    </bean>
+
+
+    <!-- ========================================== -->
+    <!-- Define Queue Config                        -->
+    <!-- ========================================== -->
+<!--    <bean id="netQueueConfig" class="bxi.online.queue.NetQueueConfig">
+                <property name="queuePerChannel" value="20"/>
+        <property name="threadPerQueue" value="2"/>
+        <property name="maxQueueNum" value="5"/>
+        <property name="maxQueueSize" value="2"/>
+        <property name="delayTime" value="10000"/>
+        <property name="unWriteableCount" value="2"/>
+    </bean>
+-->
+
+    <bean id="sendQueueConfig" class="bxi.online.queue.SendQueueConfig">
+        <property name="queuePerChannelCount" value="20"/>
+        <property name="maxQueueCount" value="5"/>
+        <property name="threadPerQueueCount" value="2"/>
+        <property name="maxQueueSize" value="100"/>
+        <property name="thresholdRate" value="50"/>
+        <property name="queueDelayTime" value="10000"/>
+        <property name="writeRetryCount" value="2"/>
+    </bean>
+    <!-- ========================================== -->
+    <!-- Event Bus                                  -->
+    <!-- ========================================== -->
+    <bean id="externalEventBusConfiguration" class="bxi.connect.event.ExternalEventBusConfiguration">
+        <constructor-arg index="0" type="int" value="64"/>
+        <constructor-arg index="1" type="int" value="512"/>
+    </bean>
+
+    <bean id="internalEventBusConfiguration" class="bxi.connect.event.InternalEventBusConfiguration">
+        <constructor-arg index="0" type="int" value="64"/>
+        <constructor-arg index="1" type="int" value="512"/>
+    </bean>
+
+    <!-- Client channel factory -->
+    <!-- <bean id="clientChannelFactory" class="bxi.common.netty.tcp.handler.ClientChannelPipelineFactory" /> -->
+
+    <!-- ========================================== -->
+    <!-- Quartz2                                    -->
+    <!-- ========================================== -->
+    <bean id="quartz2" class="org.apache.camel.component.quartz2.QuartzComponent">
+        <property name="startDelayedSeconds" value="5"/>
+        <property name="propertiesFile" value="quartz.properties"/>
+    </bean>
+
+    <!-- ========================================== -->
+    <!-- Camel Thread Pool                          -->
+    <!-- ========================================== -->
+    <bean id="threadPoolProfile" class="org.apache.camel.spi.ThreadPoolProfile">
+        <property name="id" value="defaultThreadPoolProfile"/>
+        <property name="poolSize" value="64"/>
+        <property name="maxPoolSize" value="{{ max_camel_thread_pool }}"/>
+        <property name="keepAliveTime" value="60"/>
+        <property name="maxQueueSize" value="512"/>
+        <property name="defaultProfile" value="true"/>
+        <property name="timeUnit" value="SECONDS"/>
+        <property name="rejectedPolicy" value="CallerRuns"/>
+    </bean>
+
+    <!-- ========================================== -->
+    <!-- HazelCast                                  -->
+    <!-- ========================================== -->
+    <hz:client id="hazelcastClient">
+        <hz:network connection-attempt-limit="0">
+            {% if host_name.startswith("tvdev") or host_name.startswith('localhost') %}
+            <hz:member>{{ hz_member[host_name][0] }}:{{ hazelcast_port }}</hz:member>
+            {% else %}
+            <hz:member>{{ hz_member[host_name][0] }}:{{ hazelcast_port }}</hz:member>
+            <hz:member>{{ hz_member[host_name][1] }}:{{ hazelcast_port }}</hz:member>
+            {% endif %}
+        </hz:network>
+
+        <hz:connection-strategy async-start="false" reconnect-mode="ASYNC"/>
+    </hz:client>
+
+    <bean id="hazelcastBackupApproval" class="bxi.online.approval.HazelcastBackupApproval" />
+
+    <!-- ========================================== -->
+    <!-- SessionStatus Bean                           -->
+    <!-- ========================================== -->
+    <bean id="netSessionStatus" class="bxi.connect.net.session.NetInstSessionStatus" />
+
+    <!-- ========================================== -->
+    <!-- Application Bean                           -->
+    <!-- ========================================== -->
+    <bean id="timerSuperProcess" class="bxi.online.timer.TimerSuperProcess">
+        <!--property name="timerProcess" ref="hashedWheelTimerProcess"/-->
+        <!--property name="timerProcess" ref="imdgTimerProcess"/-->
+        <property name="timerProcess" ref="hashedWheelTimerProcess"/>
+    </bean>
+    <!--<bean id="imageLoggingUserProcessor" class="bxi.logging.process.DefaultImageLoggingUserProcessor" />
+             <bean id="trxHistoryLoggingUserProcessor" class="bxi.logging.process.DefaultTrxHistoryLoggingUserProcessor" /> -->
+        <bean id="imageLoggingUserProcessor" class="bxi.extension.customizing.api.ImageLoggingUserProcessor" />
+        <bean id="trxHistoryLoggingUserProcessor" class="bxi.extension.customizing.api.TrxHistoryLoggingUserProcessor" />
+        <bean id="messageLoggingProcessor" class="bxi.logging.process.MessageLoggingProcessor">
+            <property name="defaultBxiSrLogBatchDao" ref="dataSource"/>
+        </bean>
+
+    <!-- message restoration bean -->
+    <bean id="messageRestorationProcess" class="bxi.online.restoration.DbMessageRestorationProcess" />
+<!--
+    <bean id="messageRestorationProcess" class="bxi.online.restoration.ImdgMessageRestorationProcess" />
+-->
+
+    <!-- ========================================== -->
+    <!-- XML assembler                              -->
+    <!-- ========================================== -->
+    <!-- <bean id="XMLMessageAssemblerImpl" class="bxi.online.transform.XMLMessageAssemblerImpl"/> -->
+
+    <!-- ========================================== -->
+    <!-- Camel                                      -->
+    <!-- ========================================== -->
+    <bean id="noErrorHandler" class="org.apache.camel.builder.NoErrorHandlerBuilder"/>
+    <camelContext id="bxiCamelContext" errorHandlerRef="noErrorHandler" xmlns="http://camel.apache.org/schema/spring" />
+
+    <!-- ========================================== -->
+    <!-- DefaultHsmProcessor                        -->
+    <!-- added 2019.02.01               -->
+    <!-- ========================================== -->
+    <bean id="hsmProcessor" class="bxi.parser.security.DefaultHsmProcessor"/>
+
+    <!-- 20190308 추가 -->
+    <bean id="alarmProcessor" class="bxi.logging.error.DefaultAlarmProcessor" />
+
+</beans>

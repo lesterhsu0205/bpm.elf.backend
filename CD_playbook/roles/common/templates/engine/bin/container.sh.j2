@@ -1,0 +1,57 @@
+#!/bin/sh
+echo "BXIHOME=$BXIHOME"
+echo "LOGHOME=$LOGHOME"
+
+ARGS=$*
+echo ${ARGS}
+TENANT_ID=$1
+NODE_ID=$2
+EXEC_NODE_ID=$3
+CONTAINER_ID=$4
+ENGINE_TYPE=$5
+
+INSTANCE_ID=${CONTAINER_ID: -3}
+
+### CLASSPATH Registry ###
+CLASSPATH=$BXIHOME/config:$BXIHOME/libs/*:$BXIHOME/generation/customizing
+
+### Netty Config ###
+NETTY_CONFIG="-Dio.netty.allocator.numHeapArenas=20 -Dio.netty.allocator.pageSize=4096 -Dio.netty.allocator.maxCachedBufferCapacity=8192"
+
+MEMORY_SIZE={{ bxi_mem_size }}
+{% for instance in instances %}
+[[ "{{ instance.list }}" =~ (^|[[:space:]])$INSTANCE_ID($|[[:space:]]) ]] && MEMORY_SIZE={{ instance.mem_size }}
+{% endfor %}
+
+### Java Config ###
+HEAP_OPT="-Xms${MEMORY_SIZE} -Xmx${MEMORY_SIZE}"
+GC_OPT="-Xloggc:${LOGHOME}/${CONTAINER_ID}-gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100M -XX:+UseG1GC -XX:+UnlockDiagnosticVMOptions -XX:+G1SummarizeConcMark -XX:InitiatingHeapOccupancyPercent=35"
+
+JAVA_BIN=$JAVA_HOME/bin/java
+
+BXI_CONTEXT_FILE="${BXIHOME}/config/ApplicationContext.xml"
+{% if datasource.db01 is defined %}
+if [[ $CONTAINER_ID == *"_L01" ]]; then
+  BXI_CONTEXT_FILE="${BXIHOME}/config/ApplicationContext.db01.xml"
+fi
+{% endif %}
+{% if datasource.db02 is defined %}
+if [[ $CONTAINER_ID == *"_L02" ]]; then
+  BXI_CONTEXT_FILE="${BXIHOME}/config/ApplicationContext.db02.xml"
+fi
+{% endif %}
+
+OPT="${HEAP_OPT} -Dname=BXI_MCA_ADMIN -Dnode=${NODE_ID} -Dcontainer=${CONTAINER_ID} -DlogPath=${LOGHOME} -Dbxi.home=${BXIHOME} ${NETTY_CONFIG} -classpath $CLASSPATH -Djava.library.path=${BXIHOME}/libs -Dbxi.context.file=file:${BXI_CONTEXT_FILE} -Dbxi.property.file=${BXIHOME}/config/bxi.properties -Dlog4j.configurationFile=file:${BXIHOME}/config/log4j.instance.xml "
+
+[[ "MBK" =~ (^|[[:space:]])$INSTANCE_ID($|[[:space:]]) ]] && OPT+="-Dbxi.ignorelog.interfaces=MMBKCBKA015031,MMBKDECA000023,MMBKCBKA01A002 "
+[[ "CWA" =~ (^|[[:space:]])$INSTANCE_ID($|[[:space:]]) ]] && OPT+="-Dbxi.ignorelog.interfaces=MCWACBKA011001,MCWACBKA015031,MCWADECA000023,MCWACBKA01A002 "
+
+OPT+="${GC_OPT}"
+
+echo "***************************************************************"
+echo "  - JAVA_BIN          : ${JAVA_BIN}                            "
+echo "  - OPT               : ${OPT}                                 "
+echo "***************************************************************"
+
+nohup $JAVA_BIN $OPT bxi.instance.ContainerExecutor ${TENANT_ID} ${NODE_ID} ${EXEC_NODE_ID} ${CONTAINER_ID} ${ENGINE_TYPE} > /dev/null &
+#$JAVA_BIN $OPT bxi.instance.ContainerExecutor ${TENANT_ID} ${NODE_ID} ${EXEC_NODE_ID} ${CONTAINER_ID} ${ENGINE_TYPE}

@@ -1,0 +1,63 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# backup_src: source path, 
+#             if backup_exclude_path exist, this parameter's value MUST NOT end of '/'.
+# backup_dest: target path
+# backup_name: backup name
+# backup_exclude_path: List of absolute path to exclude (Optional)
+
+- name: Backup folder in two dirs
+  block:   
+    - name: Check does folder empty before proceeding
+      shell: "ls {{ backup_src }} | wc -l"
+      register: filesFound
+      
+    - name: "Backup Folder from {{ backup_src }} to {{ backup_dest }}/{{ backup_name }}"
+      archive:
+        path: "{{ backup_src }}"
+        dest: "{{ backup_dest }}/{{ backup_name }}.tar.gz"
+        format: gz
+      when: 
+        - filesFound.stdout | int > 0
+        - backup_exclude_path is not defined
+    
+    - name: Check folder list
+      shell: "ls -d {{ backup_src }}/*"
+      register: folder_list
+      when: 
+        - filesFound.stdout | int > 0
+        - backup_exclude_path is defined
+    
+    - name: "Check does exist folders not in - {{ backup_exclude_path }}"
+      set_fact:
+        backup: true
+      when: 
+        - folder_list.stdout_lines is defined
+        - backup_exclude_path is defined
+        - item not in backup_exclude_path
+      loop: "{{ folder_list.stdout_lines }}"
+    
+    - name: "Backup Folder from {{ backup_src }} to {{ backup_dest }}/{{ backup_name }}, exclude path : {{ backup_exclude_path }}"
+      archive:
+        path: 
+        - "{{ backup_src }}/*"
+        dest: "{{ backup_dest }}/{{ backup_name }}.tar.gz"
+        exclude_path: "{{ backup_exclude_path }}"
+        format: gz
+      when: 
+        - filesFound.stdout | int > 0
+        - backup_exclude_path is defined 
+        - backup|default(false)|bool == true
+    
+    - name: Keep previous two version backup files
+      shell: "ls -1t {{ backup_dest }} | grep .tar.gz | tail -n +3"
+      register: previous_backups
+
+    - name: Remove previous backup files
+      file:
+          path: "{{ backup_dest }}/{{ item }}"
+          state: absent
+      with_items: "{{ previous_backups.stdout_lines }}"
+

@@ -1,0 +1,12 @@
+# bxi 실행 노드 
+bxi.instance.execute={{ mca_ap_dir }}/engine/bin/container.sh
+
+bxi.config.update.interval=30000
+
+bxi.execute.environment=server
+
+bxi.tenant.id={{ bxi_tenant_id }}
+
+bxi.engine.type={{ bxi_engine_type }}
+
+bxi.security.key.file=config/security.key

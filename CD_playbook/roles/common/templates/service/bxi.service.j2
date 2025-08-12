@@ -1,0 +1,52 @@
+[Unit]
+Description=BXI-MCA Software Service
+{% if host_name == "tvstg-mca-app01" or host_name == "tvstg-mca-app02" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_hazelcast.service line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "tvuat-mca-app01" or host_name == "tvuat-mca-app02" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_hazelcast.service line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "tvprd-mca-app01" or host_name == "tvprd-mca-app02" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_hazelcast.service line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "lvprd-mca-app01" or host_name == "lvprd-mca-app02" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_hazelcast.service line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "tvuat-mca-app03" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "tvprd-mca-app03" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% elif host_name == "lvprd-mca-app03" %}
+After=syslog.target network.target line.app.{{ gv_env_name}}{{ system_code }}_kafka.service
+{% else %} 
+After=syslog.target network.target
+{% endif %}
+
+
+[Service]
+Type=forking
+Restart=always
+User={{ mcaadmin.user }}
+Group={{ mcaadmin.group }}
+LimitNOFILE={{ mcaadmin.nofile }}
+LimitNPROC={{ mcaadmin.nproc }}
+Environment=JAVA_HOME={{ gv_java_home }}
+Environment=BXIHOME={{ mca_ap_dir }}/engine
+ExecStart={{ mca_ap_dir }}/engine/bin/bxi_start.sh {{ host_name }}
+{% if host_name == "tvdev-ans-lab01" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N01_R
+{% elif host_name == "tvstg-mca-app01" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N01_R
+{% elif host_name == "tvstg-mca-app02" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N02_R
+{% elif host_name == "tvuat-mca-app03" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N03_R
+{% elif host_name == "tvuat-mca-app04" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N04_R
+{% elif host_name == "tvprd-mca-app05" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N05_R
+{% elif host_name == "tvprd-mca-app06" %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh MCA_N06_R
+{% else %}
+ExecStop={{ mca_ap_dir }}/engine/bin/shutdown.sh
+{% endif %}
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

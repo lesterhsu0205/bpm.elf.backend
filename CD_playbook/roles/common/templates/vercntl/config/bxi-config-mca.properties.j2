@@ -1,0 +1,13 @@
+#+-----------------------------------
+#|	mode
+#+-----------------------------------
+bxi.mode={{ system_code }}
+
+
+#+-----------------------------------
+#|	{{ gv_env_name }}
+#+-----------------------------------
+db.driver=com.mysql.jdbc.Driver
+db.url={{ datasource[source].url }}
+db.username={{ datasource[source].username }}
+db.password={{ datasource[source].password }}

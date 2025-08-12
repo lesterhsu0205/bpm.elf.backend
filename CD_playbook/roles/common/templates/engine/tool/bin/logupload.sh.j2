@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+HOME={{ mca_ap_dir }}/engine/tool
+LOG_HOME={{ mca_logs_dir }}/engine/tool
+LOGGING_HOME={{ mca_logs_dir }}/engine
+ENGINE_HOME={{ mca_ap_dir }}/engine
+SEP_LINE="================================================================================"
+
+ARGS=$*
+FILE_NAME=$1
+
+CLASSPATH=$CLASSPATH:$ENGINE_HOME/libs/*:$HOME/config
+
+### CLASSPATH Registry ###
+JAVA_BIN=$JAVA_HOME/bin/java
+OPT="-classpath $CLASSPATH -Dbxi.tool.context=file:${HOME}/config/ToolApplicationContext.xml -DlogPath=${LOGGING_HOME} -Dlog4j.configurationFile=file:${HOME}/config/log4j.xml -Dbxi.security.key.file=${HOME}/config/security.key"
+
+if [ $# -eq 0 ]; then
+	echo ${SEP_LINE}
+	$JAVA_BIN $OPT bxi.tool.logupload.LogUpload ${LOG_HOME}
+
+elif [ $# -eq 1 -a $1 != "--help" ]; then
+        echo ${SEP_LINE}
+	$JAVA_BIN $OPT bxi.tool.logupload.LogUpload ${FILE_NAME}
+else
+	echo "###################################### USE ##############################################"	
+	echo "### 1) ./logupload.sh                                                                 ###"
+	echo "### 2) ./logupload.sh {{ mca_logs_dir }}/engine/tool (directory)                               ###"
+	echo "### 3) ./logupload.sh {{ mca_logs_dir }}/engine/tool/errorLog_node01_instance01.log (file)     ###"
+	echo "#########################################################################################"
+fi
+

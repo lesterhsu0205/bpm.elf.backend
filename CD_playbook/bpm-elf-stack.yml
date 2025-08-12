@@ -1,0 +1,45 @@
+---
+
+- hosts: "{{ host_name }}"
+  become: yes
+  vars_files:
+    - "vars/global/all.yml"
+    - "vars/sys_common/bpm-elf.yml"
+    - "vars/env/{{ site }}{{ env }}/{{ site }}{{ env }}-bpm-elf-stack.yml"
+    - "vars/vault/vault_token.yml"
+  roles:   
+    - name: Install Hazelcast
+      role: "hazelcast"
+      when:
+        - restart_only|default(false)|bool == false
+        - hazelcast_installation[host_name]|default(false)|bool == true
+      
+    - name: Install Kafka
+      role: "kafka"
+      when: 
+        - restart_only|default(false)|bool == false
+        - kafka_installation[host_name]|default(false)|bool == true
+
+    - name: Install Engine
+      role: "engine"
+      when: 
+        - restart_only|default(false)|bool == false
+        - engine_installation[host_name]|default(false)|bool == true
+      
+    - name: Install Webadmin
+      role: "webadmin"
+      when: 
+        - restart_only|default(false)|bool == false
+        - webadmin_installation[host_name]|default(false)|bool == true
+
+    - name: Install Filebeat
+      role: "filebeat"
+      when:
+        - restart_only|default(false)|bool == false
+        - filebeat_installation[host_name]|default(false)|bool == true
+    
+    - name: Generate version
+      role: "version"
+      when:
+        - restart_only|default(false)|bool == false
+    

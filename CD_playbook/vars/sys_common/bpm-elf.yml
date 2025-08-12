@@ -1,0 +1,234 @@
+# =========== mca default role variables ===========
+
+timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+mca_ap_backup_version: "{{ mca_ap_version }}-{{ timestamp }}"
+mca_ap_artifactid: "bs011.mca.assembly"
+
+mca_ap_dir: "{{ gv_sw_dir }}/mca"
+mca_was_dir: "{{ gv_apps_dir }}/mca"
+mca_logs_dir: "{{ gv_logs_dir }}/mca"
+mca_backup_dir: "{{ gv_backup_dir }}/mca"
+mca_rollback_dir: "{{ gv_rollback_dir }}/mca"
+
+cd_account: "lbadm"
+
+# =========== os-account  ===========
+mcaadmin:
+  user: mcaadmin
+  user_id: 4003
+  group: mca
+  group_id: 403
+  user_home: "/home/mcaadmin"
+  nofile: 65535
+  nproc: 65535
+  
+wasadmin: 
+  user: wasadmin
+  user_id: 2001
+  group: was
+  group_id: 201 
+  user_home: "/home/wasadmin"
+  nofile: 65535
+  nproc: 65535
+
+keystore:
+  user: keystore
+  user_id: 5001
+  group: key
+  group_id: 501
+  user_home: "/home/keystore"
+
+account_group:
+  - name: wasadmin
+    groups: key
+
+# =========== crontab  ===========
+service_crontab:
+  wasadmin:
+    - user: wasadmin
+      name: /usr/bin/rm  "server.log.????-??-??.gz" -mtime +14 in {{ gv_logs_dir }}/jboss
+      minute: '03'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "server.log.????-??-??.gz" -mtime +14 -exec /usr/bin/rm {} \;
+    - user: wasadmin
+      name: /usr/bin/gzip -9  "server.log.????-??-??" -mtime +4 in {{ gv_logs_dir }}/jboss
+      minute: '06'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "server.log.????-??-??" -mtime +4 -exec /usr/bin/gzip -9 {} \;
+    - user: wasadmin
+      name: /usr/bin/rm  "gc_????????_??????.log*.gz" -mtime +14 in {{ gv_logs_dir }}/jboss
+      minute: '09'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "gc_????????_??????.log*.gz" -mtime +14 -exec /usr/bin/rm {} \;
+    - user: wasadmin
+      name: /usr/bin/gzip -9  "gc_????????_??????.log*" -mtime +4 in {{ gv_logs_dir }}/jboss
+      minute: '12'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "gc_????????_??????.log*" -mtime +4 -exec /usr/bin/gzip -9 {} \;
+    - user: wasadmin
+      name: /usr/bin/rm  "access.????-??-??.log.gz" -mtime +14 in {{ gv_logs_dir }}/jboss
+      minute: '15'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "access.????-??-??.log.gz" -mtime +14 -exec /usr/bin/rm {} \;
+    - user: wasadmin
+      name: /usr/bin/gzip -9  "access.????-??-??.log" -mtime +4 in {{ gv_logs_dir }}/jboss
+      minute: '18'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "access.????-??-??.log" -mtime +4 -exec /usr/bin/gzip -9 {} \;
+    - user: wasadmin
+      name: /usr/bin/rm  "*.out.????????_??????.gz" -mtime +14 in {{ gv_logs_dir }}/jboss
+      minute: '21'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "*.out.????????_??????.gz" -mtime +14 -exec /usr/bin/rm {} \;
+    - user: wasadmin
+      name: /usr/bin/gzip -9  "*.out.????????_??????" -mtime +4 in {{ gv_logs_dir }}/jboss
+      minute: '24'
+      hour: '3'
+      job: /usr/bin/find {{ gv_logs_dir }}/jboss -type f -name "*.out.????????_??????" -mtime +4 -exec /usr/bin/gzip -9 {} \;
+    - user: wasadmin
+      name: /usr/bin/rm  "webadmin.log.????????.gz" -mtime +14 in {{ mca_logs_dir }}/admin
+      minute: '27'
+      hour: '3'
+      job: /usr/bin/find {{ mca_logs_dir }}/admin -type f -name "webadmin.log.????????.gz" -mtime +14 -exec /usr/bin/rm {} \;
+    - user: wasadmin
+      name: /usr/bin/gzip -9  "webadmin.log.????????" -mtime +4 in {{ mca_logs_dir }}/admin
+      minute: '30'
+      hour: '3'
+      job: /usr/bin/find {{ mca_logs_dir }}/admin -type f -name "webadmin.log.????????" -mtime +4 -exec /usr/bin/gzip -9 {} \;
+  mcaadmin:
+    hazelcast:
+      - user: mcaadmin
+        name: /usr/bin/rm  "hazelcast.log.????????.gz" in {{ mca_logs_dir }}/hazelcast
+        minute: '15'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/hazelcast -type f -mtime +14 -name "hazelcast.log.????????.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "hazelcast.log.????????" in {{ mca_logs_dir }}/hazelcast
+        minute: '18'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/hazelcast -type f -mtime +4 -name "hazelcast.log.????????" -exec /usr/bin/gzip -9 {} \;
+    kafka:
+      - user: mcaadmin
+        name: /usr/bin/rm  "server.log.????-??-??-??.gz" in {{ mca_logs_dir }}/engine/kafka
+        minute: '21'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +14 -name "server.log.????-??-??-??.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "server.log.????-??-??-??" in {{ mca_logs_dir }}/engine/kafka
+        minute: '24'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +4 -name "server.log.????-??-??-??" -exec /usr/bin/gzip -9 {} \;
+      - user: mcaadmin
+        name: /usr/bin/rm  "controller.log.????-??-??-??.gz" in {{ mca_logs_dir }}/engine/kafka
+        minute: '27'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +14 -name "controller.log.????-??-??-??.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "controller.log.????-??-??-??" in {{ mca_logs_dir }}/engine/kafka
+        minute: '30'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +4 -name "controller.log.????-??-??-??" -exec /usr/bin/gzip -9 {} \;
+      - user: mcaadmin
+        name: /usr/bin/rm  "log-cleaner.log.????-??-??-??.gz" in {{ mca_logs_dir }}/engine/kafka
+        minute: '33'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +14 -name "log-cleaner.log.????-??-??-??.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "log-cleaner.log.????-??-??-??" in {{ mca_logs_dir }}/engine/kafka
+        minute: '36'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +4 -name "log-cleaner.log.????-??-??-??" -exec /usr/bin/gzip -9 {} \;
+      - user: mcaadmin
+        name: /usr/bin/rm  "state-change.log.????-??-??-??.gz" in {{ mca_logs_dir }}/engine/kafka
+        minute: '39'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +14 -name "state-change.log.????-??-??-??.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "state-change.log.????-??-??-??" in {{ mca_logs_dir }}/engine/kafka
+        minute: '42'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine/kafka -type f -mtime +4 -name "state-change.log.????-??-??-??" -exec /usr/bin/gzip -9 {} \;
+    engine:
+      - user: mcaadmin
+        name: /usr/bin/rm  "MCA_*.log.????????*.gz" in {{ mca_logs_dir }}/engine
+        minute: '03'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +14 -name "MCA_*.log.????????*.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "MCA_*.log.????????*" in {{ mca_logs_dir }}/engine
+        minute: '06'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +4 -name "MCA_*.log.????????*" -exec /usr/bin/gzip -9 {} \;
+      - user: mcaadmin
+        name: /usr/bin/rm  "integrationLogMng_*.log.????????.gz" in {{ mca_logs_dir }}/engine
+        minute: '09'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +14 -name "integrationLogMng_*.log.????????.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "integrationLogMng_*.log.????????" in {{ mca_logs_dir }}/engine
+        minute: '12'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +4 -name "integrationLogMng_*.log.????????" -exec /usr/bin/gzip -9 {} \;
+      - user: mcaadmin
+        name: /usr/bin/rm  "*_MCA_*.log????????.*.gz" in {{ mca_logs_dir }}/engine
+        minute: '15'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +14 -name "*_MCA_*.log????????.*.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "*_MCA_*.log????????.*" in {{ mca_logs_dir }}/engine
+        minute: '18'
+        hour: '3'
+        job: /usr/bin/find {{ mca_logs_dir }}/engine -type f -mtime +4 -name "*_MCA_*.log????????.*" -exec /usr/bin/gzip -9 {} \;      
+      - user: mcaadmin
+        name: /usr/bin/rm  "confmanage.log.????????.gz" in {{ mca_ap_dir }}/vercntl/logs
+        minute: '45'
+        hour: '3'
+        job: /usr/bin/find {{ mca_ap_dir }}/vercntl/logs -type f -mtime +14 -name "confmanage.log.????????.gz" -exec /usr/bin/rm {} \;
+      - user: mcaadmin
+        name: /usr/bin/gzip -9  "confmanage.log.????????" in {{ mca_ap_dir }}/vercntl/logs
+        minute: '48'
+        hour: '3'
+        job: /usr/bin/find {{ mca_ap_dir }}/vercntl/logs -type f -mtime +4 -name "confmanage.log.????????" -exec /usr/bin/gzip -9 {} \;
+        
+# =========== verify instances =========== 
+
+node_number: "{{ host_name.split('-')[2][3:5] }}"
+verify_uuid: "VERIFY_{{timestamp | replace('T', '')}}{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=10) }}"
+
+verify_info:
+  - name: "SUI"
+    interface: "MSUICBKA002603"
+    interface_descriptiion: "Inquire Staff Information"
+    port: 11510
+    process: "MCA_N{{ node_number }}_O01_SUI"
+  - name: "MBK"
+    interface: "MMBKCBKA002837"
+    interface_descriptiion: "Institution Parameter Inquiry"
+    port: 11520
+    process: "MCA_N{{ node_number }}_O02_MBK"
+  - name: "IBK"
+    interface: "MIBKCBKA002837"
+    interface_descriptiion: "Institution Parameter Inquiry"
+    port: 11530
+    process: "MCA_N{{ node_number }}_O03_IBK"
+  - name: "CTI"
+    interface: "MCTICBKA018004"
+    interface_descriptiion: "PIN Code Status Inquiry"
+    port: 11540
+    process: "MCA_N{{ node_number }}_O04_CTI"
+  - name: "BKS"
+    interface: "MBKSCBKA015031"
+    interface_descriptiion: "Customer Integration Information Inquiry"
+    port: 11620
+    process: "MCA_N{{ node_number }}_O05_BKS"
+  - name: "CWA"
+    interface: "MCWACBKA002837"
+    interface_descriptiion: "Institution Parameter Inquiry"
+    port: 11570
+    process: "MCA_N{{ node_number }}_O06_CWA"
+  - name: "EIB"
+    interface: "MEIBCBKA027061"
+    interface_descriptiion: "EIB Transaction Inquiry"
+    port: 11630
+    process: "MCA_N{{ node_number }}_O07_EIB"
+        

@@ -1,0 +1,13 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# process_name : name of process
+
+- name: Verify process - {{ process_name }} is exist
+  shell: "ps aux | grep bxi.instance.ContainerExecutor | grep {{ process_name }} | grep -v grep | wc -l"
+  register: process_count
+  retries: 3
+  delay: 10
+  until: process_count.stdout == '1'
+  become: true

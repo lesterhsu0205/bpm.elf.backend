@@ -1,0 +1,27 @@
+- tags:
+  - undo
+  block:
+    - name: Remove zookeeper service
+      include_tasks: "base/undo_services.yml"
+      vars:
+        target: "line.app.{{ gv_env_name }}{{ system_code }}_zookeeper.service"
+
+    - name: Remove kafka service
+      include_tasks: "base/undo_services.yml"
+      vars:
+        target: "line.app.{{ gv_env_name }}{{ system_code }}_kafka.service"
+
+    - name: Remove kafka crontabs
+      include_tasks: "base/undo_crontabs.yml"
+      vars:
+        crontab_items: "{{ service_crontab['mcaadmin']['kafka'] }}"
+
+    - name: Remove kafka, backups, logs 
+      include_tasks: "base/undo_folders.yml"
+      vars:
+        target_items:
+          - "{{ mca_ap_dir }}/engine/kafka"
+          - "{{ mca_logs_dir }}/engine/kafka"
+          - "{{ mca_backup_dir }}/kafka"
+          - "{{ mca_rollback_dir }}/kafka"
+        user: "mcaadmin"

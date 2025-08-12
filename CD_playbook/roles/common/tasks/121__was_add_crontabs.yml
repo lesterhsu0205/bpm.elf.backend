@@ -1,0 +1,14 @@
+---
+
+- tags:
+  - cron
+  block:
+  - name: Add service crontab
+    cron:
+      name: "{{ item.name }}"
+      minute: "{{ item.minute }}"
+      hour: "{{ item.hour }}"
+      job: "{{ item.job }}"
+      user: "{{ item.user }}"
+    with_items: "{{ service_crontab['wasadmin'] }}"
+  

@@ -1,0 +1,33 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# activehcfile: path of hc file
+# inactivehcfile: path of unhc file
+
+- name: Rename hc file
+  block:
+    - name: Check hc.html
+      stat: 
+        path: "{{ activehcfile }}"
+      register: hc_file
+  
+    - name: Unmount from LB
+      command: "mv {{ activehcfile }} {{ inactivehcfile }}"
+      when: 
+        - hc_file.stat.exists
+        - lbaction == "unmount"
+
+    - name: Check unhc.html
+      stat: 
+        path: "{{ inactivehcfile }}"
+      register: unhc_file
+
+    - name: Mount to LB
+      command: "mv {{ inactivehcfile }} {{ activehcfile }}"
+      when: 
+        - unhc_file.stat.exists
+        - lbaction == "mount"
+        
+  become: yes
+  become_user: wasadmin         

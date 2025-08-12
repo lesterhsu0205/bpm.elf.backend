@@ -1,0 +1,18 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# version_path: was path
+# user: user info
+
+- name: Replace version config
+  block:
+    - name: Generate {{ version_path }}/version.txt
+      template:
+        src: version.txt.j2
+        dest: "{{ version_path }}/version.txt"
+        owner: "{{ user.user }}"
+        group: "{{ user.group }}"
+        mode: 0644
+        
+  become: yes       

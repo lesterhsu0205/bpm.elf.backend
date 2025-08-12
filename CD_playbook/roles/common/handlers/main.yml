@@ -1,0 +1,8 @@
+---
+
+# handlers will always run in order they are defined, not in order they are listed in notify:
+- name: Reload systemd daemon
+  become: yes
+  command: systemctl daemon-reload
+  listen: "RELOAD_SYSTEMD_DAEMON"
+  

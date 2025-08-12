@@ -1,0 +1,16 @@
+#################################################################
+# Parameters
+#################################################################
+# target_items: list of path to remove, ex. ['/opt/apps/mcasui', '/opt/sw/mca/version.txt']
+# user: excute user like 'mcaadmin', 'wasadmin',...etc.
+---
+- name: Undo folders
+  block:
+    - name: Remove folders
+      file:
+        state: absent
+        path: "{{ item }}"
+      with_items: "{{ target_items }}"
+
+  become: yes
+  become_user: "{{ user }}"

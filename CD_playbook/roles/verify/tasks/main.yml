@@ -1,0 +1,53 @@
+---
+- tags:
+  - always
+  block:
+    - name: Pause {{ pause_mins }} mins to wait service startup
+      pause:
+        minutes: "{{ pause_mins }}"
+      when:
+        - lbaction == "mount"
+        - pause_wait|default(false)|bool == true
+        - pause_mins is defined
+  
+    - name: Verify systemd 
+      include_role:
+        name: common
+        tasks_from: "base/verify_systemd.yml"
+      vars:  
+        systemd_unit: "{{ unit }}"
+      with_items: "{{ systemd_units[host_name] }}"
+      loop_control:
+        loop_var: unit
+    
+    - name: Verify process
+      include_role:
+        name: common
+        tasks_from: "base/verify_process.yml"  
+      vars:  
+        process_name: "{{ item.process }}"
+      with_items: "{{ verify_info }}"
+      
+    - name: Verify instance
+      include_role:
+        name: common
+        tasks_from: "base/verify_instance.yml"
+      vars:  
+        instance: "{{ item.name }}"
+        target_api: "{{ sso_mca.protocol }}://{{ sso_mca.sub_domain }}.{{ sso_mca.domain }}:{{ item.port }}"
+        verify_data: {
+                       header: {
+                          stdTgmVer: 57,
+                          guidSeqNbr: 1,
+                          guid: "{{ verify_uuid }}",
+                          italGuid: "{{ verify_uuid }}",
+                          rqstRspsDsCd: "S",
+                          tgmTpCd: "S",
+                          ifId: "{{ item.interface }}",
+                          italIfId: "{{ item.interface }}",
+                          clntIpv4IpAddr: "127.0.0.1",
+                          staffId: "BXI-VERIFIER"
+                       }
+                     }
+      with_items: "{{ verify_info }}"
+  become: yes

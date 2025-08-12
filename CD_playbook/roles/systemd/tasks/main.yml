@@ -1,0 +1,18 @@
+---
+- tags:
+  - always
+  block:
+    - name: Control hazelcast, zookeeper, kafka, bxi service
+      include_role:
+        name: common
+        tasks_from: "011__control_services.yml"
+    
+    - name: Control bxi webadmin service
+      include_role:
+        name: common
+        tasks_from: "101__control_services.yml"
+
+    - name: Control filebeat service
+      include_role:
+        name: common
+        tasks_from: "201__control_services.yml"

@@ -1,0 +1,12 @@
+---
+
+# create group / user
+- tags:
+  - os-pretasks
+  block:
+    - name: Create group and user
+      include_tasks: "base/account.yml"
+      vars:
+        user_list: "{{ mcaadmin }}"
+        
+  become: yes

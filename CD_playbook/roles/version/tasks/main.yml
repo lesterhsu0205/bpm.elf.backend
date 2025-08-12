@@ -1,0 +1,23 @@
+---
+- tags:
+  - always
+  block:
+    - name: Generate version file
+      include_role:
+        name: common
+        tasks_from: "base/replace_config_version.yml"
+      vars:
+        version_path: "{{ mca_ap_dir }}"
+        golden_image_version: "{{ mca_ap_artifactid }}-{{ mca_ap_version }}"
+        user: "{{ mcaadmin }}" 
+      when: (hazelcast_installation[host_name]|default(false)|bool == true) or (kafka_installation[host_name]|default(false)|bool == true) or (engine_installation[host_name]|default(false)|bool == true) or (mca_sui_installation[host_name]|default(false)|bool == true)
+
+    - name: Generate webadmin version file
+      include_role:
+        name: common
+        tasks_from: "base/replace_config_version.yml"
+      vars:
+        version_path: "{{ mca_was_dir }}"
+        golden_image_version: "{{ mca_ap_artifactid }}-{{ mca_ap_version }}"
+        user: "{{ wasadmin }}"
+      when: "webadmin_installation[host_name]|default(false)|bool == true"

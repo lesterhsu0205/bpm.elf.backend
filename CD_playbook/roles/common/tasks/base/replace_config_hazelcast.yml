@@ -1,0 +1,27 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# mca_ap_dir: ap path
+# mcaadmin: mcaadmin info
+
+- name: Replace hazelcast config
+  block:
+    - name: Generate {{ mca_ap_dir }}/engine/hazelcast/bin/hazelcast.xml ( 1/2 )
+      template:
+        src: engine/hazelcast/bin/hazelcast.xml.j2
+        dest: "{{ mca_ap_dir }}/engine/hazelcast/bin/hazelcast.xml"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0644
+        
+    - name: Generate {{ mca_ap_dir }}/engine/hazelcast/bin/start.sh ( 2/2 )
+      template:
+        src: engine/hazelcast/bin/start.sh.j2
+        dest: "{{ mca_ap_dir }}/engine/hazelcast/bin/start.sh"
+        owner: "{{ mcaadmin.user }}"
+        group: "{{ mcaadmin.group }}"
+        mode: 0755    
+        
+  become: yes
+  become_user: mcaadmin         

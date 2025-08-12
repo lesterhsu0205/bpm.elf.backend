@@ -1,0 +1,13 @@
+gv_sw_dir: /opt/sw
+gv_apps_dir: /opt/apps
+gv_backup_dir: /opt/backup
+gv_rollback_dir: /opt/rollback
+gv_logs_dir: /logs
+gv_data_dir: /data
+gv_etc_hosts: /etc/hosts
+gv_shared_dir: /shared
+gv_tmp_dir: /tmp
+gv_etc_filebeat: /etc/filebeat
+
+gv_java_home: "/usr/lib/jvm/java-1.8.0-openjdk"
+gv_repo_url: "https://repos.linebank.com.tw:8082/artifactory/golden-image-release"

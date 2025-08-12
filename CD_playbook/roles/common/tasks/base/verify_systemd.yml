@@ -1,0 +1,13 @@
+---
+#################################################################
+# Parameters
+#################################################################
+# systemd_unit: name of systemd
+
+- name: Verify {{ systemd_unit }} is running
+  command: "systemctl is-active {{ systemd_unit }}"
+  register: systemd_state
+  retries: 3
+  delay: 10
+  until: systemd_state.stdout == 'active'
+  become: true

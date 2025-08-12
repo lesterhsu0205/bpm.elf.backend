@@ -116,6 +116,6 @@ fi
 # 確保 docker-compose.dev.yml 裡 deploy.replicas: ${REPLICAS:-2} 用到環境變數
 export REPLICAS ROOT_DIR VERSION HOSTNAME
 
-docker stack deploy -c "$COMPOSE_FILE" "$APP_NAME" --detach=false
+docker stack deploy -c "$COMPOSE_FILE" "$APP_NAME" --detach=false --resolve-image=always
 
 echo "✅ Stack '$APP_NAME' deployed with $REPLICAS replicas."

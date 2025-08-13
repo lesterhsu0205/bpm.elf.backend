@@ -2,31 +2,6 @@
   "name": "上版維運信",
   "tickets": [
     {
-      "name": "基本資料",
-      "inputs": [
-        {
-          "type": "text",
-          "label": "起始時間",
-          "key": "start_time"
-        },
-        {
-          "type": "text",
-          "label": "結束時間",
-          "key": "end_time"
-        },
-        {
-          "type": "textarea",
-          "label": "作業說明",
-          "key": "op_description"
-        },
-        {
-          "type": "textarea",
-          "label": "主機清單",
-          "key": "device"
-        }
-      ]
-    },
-    {
       "$include": "maintain-announce.json"
     },
     {

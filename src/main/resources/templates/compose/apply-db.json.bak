@@ -1,0 +1,23 @@
+{
+  "name": "DB申請",
+  "tickets": [
+    {
+      "$include": "vm.json"
+    },
+    {
+      "$include": "imperva.json"
+    },
+    {
+      "$include": "install-dpm.json"
+    },
+    {
+      "$include": "db.json"
+    },
+    {
+      "$include": "vip-domain.json"
+    },
+    {
+      "$include": "firewall.json"
+    }
+  ]
+}

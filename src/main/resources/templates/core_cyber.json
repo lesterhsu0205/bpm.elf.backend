@@ -1,0 +1,75 @@
+{
+  "name": "DB",
+  "path": [
+    "IT01_資訊需求單",
+    "核心系統處需求",
+    "其他"
+  ],
+  "inputs": [
+    {
+      "type": "text",
+      "label": "來源依據",
+      "key": "REASON"
+    },
+    {
+      "label": "環境",
+      "type": "radio",
+      "key": "env",
+      "options": [
+        {
+          "text": "DEV"
+        },
+        {
+          "text": "STG"
+        },
+        {
+          "text": "UAT"
+        },
+        {
+          "text": "PRD"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "label": "申請帳號",
+      "key": "ACCOUNT"
+    },
+    {
+      "type": "text",
+      "label": "System Code",
+      "key": "system_code"
+    },
+    {
+      "type": "text",
+      "label": "DB Name",
+      "key": "DBNAME"
+    },
+    {
+      "type": "text",
+      "label": "DB Host/IP",
+      "key": "DBHOST_IP"
+    },
+    {
+      "type": "text",
+      "label": "Database",
+      "key": "DBDATEBASE"
+    },
+    {
+      "type": "text",
+      "label": "使用期間(起始日)",
+      "key": "START_DATE"
+    },
+    {
+      "type": "text",
+      "label": "使用期間(結束日)",
+      "key": "END_DATE"
+    },
+    {
+      "type": "description",
+      "label": "需求說明",
+      "key": "cid_description",
+      "template": "需求主旨：[${env}]申請CyberArk帳號\n\n*申請原因：依據${REASON}，申請拆CyberArk用以確認資料樣態\n*環境：${env}\n*申請帳號 : ${ACCOUNT}\n*使用期間 : ${START_DATE}~${END_DATE}\n*帳號類型 : Database\nSystem Code：${system_code}\nDB類型：Oracle\nDB Name：${DBNAME}\nHost IP : ${DBHOST_IP}\nDatabase : ${DBDATEBASE}"
+    }
+  ]
+}

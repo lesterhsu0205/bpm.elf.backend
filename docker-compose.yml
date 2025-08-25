@@ -1,7 +1,7 @@
 # local 開發時使用 rhel8/tomcat11 image 當作 ap container, 可用於 debug mode
 
 services:
-  rest:
+  api:
     image: rhel8/tomcat10
     container_name: bpm-elf-backend-local
     ports:

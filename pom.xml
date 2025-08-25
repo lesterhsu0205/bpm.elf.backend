@@ -215,7 +215,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>docker-build-rest</id>
+                        <id>docker-build-api</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>

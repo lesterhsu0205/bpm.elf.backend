@@ -1,5 +1,5 @@
 services:
-  rest:
+  api:
     image: bpm-elf-backend:${VERSION}
 #    container_name: bpm-elf-backend-dev   # swarm 底下沒用
 #    ports:

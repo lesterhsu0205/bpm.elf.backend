@@ -273,7 +273,7 @@ public class TicketProcessorService {
             ObjectNode composeNode = mapper.createObjectNode();
             ArrayNode childrenNode = mapper.createArrayNode();
 
-            composeNode.put("name", "Compose 需求單");
+            composeNode.put("name", "Compose 單");
             composeNode.put("icon", "ticket");
             composeNode.set("children", childrenNode);
 
